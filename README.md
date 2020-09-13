@@ -1,6 +1,3 @@
-**流程:**
-1. Tokenization
-2. Stopwords
-3. Normalization
-4. Stemming
-5. Lemmatization
+# IR Homework
+
+2020 Fall semester Biomedical Information Retrieval(P75A500)
