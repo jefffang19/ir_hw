@@ -1,8 +1,15 @@
 <p>Welcome</p>
+{% load search_extra %}
 
 {% if articles %}
     <ul>
         {% for a in articles %}
-            <li>{{ a }}</li>
+            <li>{% for w in a %}
+                {% if forloop.parentloop.counter0 in keylines and forloop.counter0 in keywords|get_element:forloop.parentloop.counter0 %}
+                    <mark>{{ w }}</mark>
+                {% else %}
+                    {{ w }}
+                {% endif %}
+            {% endfor %}</li>
         {% endfor %}
 {% endif %}

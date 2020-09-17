@@ -22,5 +22,13 @@ def import_json(request):
 
 def show_articles(request):
     all_articles = Article.objects.all()
+    # structure of words
+    # {
+    #   'articles' : a list of articles to show on template,
+    #   'keylines' : a list of which line has words to highlight,
+    #   'keywords' : a dict of which word to highlight in the corresponding line,
+    #                   key is int , value is list 
+    # }
+    words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : [1,2]  , 'keywords' : {1:[2, 4] ,2:[4]}}
     
-    return HttpResponse(loader.get_template('search_engine/show_articles.html').render({ 'articles' : [i.abstract for i in all_articles]} , request))
+    return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
