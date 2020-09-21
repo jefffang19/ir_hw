@@ -127,4 +127,13 @@ def data_processor(input_path, mode = 'json'):
 
         return abstract
 
+# parse the user input form into tokens
+# return a list
+def string_to_tokens(in_str):
+    keywords = in_str.split()
+    keywords = [[keywords[i], i] for i in range(len(keywords))]
+    keywords = stemming(remove_stopords(words_to_lower(remove_puncuation(keywords))))
+    return keywords
+
+
         

@@ -5,6 +5,7 @@ from django.template import loader
 from .forms import WordForm
 
 from search_engine.parsing_utils import data_processor
+from search_engine.parsing_utils import string_to_tokens
 
 
 # Create your views here.
@@ -52,9 +53,11 @@ def get_keywords(request):
     if request.method == 'POST':
         form = WordForm(request.POST)
         if form.is_valid():
+            # parse and clean (stemming..etc) the keywords
+            keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
             # search keywords in db (Model => Word)
             #all_words = Word.objects.filter()
-            return HttpResponse(form.cleaned_data['keywords'])
+            return HttpResponse(keywords_cleaned)
 
     # GET => create blank form
     else: 
