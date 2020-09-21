@@ -1,5 +1,31 @@
 import json
 
+# for parsing xml file
+from bs4 import BeautifulSoup
+# read a xml file from path
+# return a list of found tags
+# use tags.string to get str
+def xml_reader(path, target_tag):
+    f = open(path,'r',encoding="utf-8")
+
+    raw = f.read()
+    soup = BeautifulSoup(raw, 'lxml')
+    tags = soup.find_all(target_tag)
+    return tags
+
+# tokenlize a string from xml and store as a array (len = number of articles)
+# the element of array looks like
+# { 'sentence' : 'I like apple',
+#   'words' : ['I', 'like', 'apple']}
+def xml_string_parser(raw):
+    d = {'sentence' : raw,
+         'words' : []}
+    for i in raw.split():
+        d['words'].append(i)
+
+    return d
+
+
 # read a json file from path
 def json_reader(path):
     input_file = open(path,'r')
@@ -82,7 +108,7 @@ def stemming(word_list):
 # { 'sentence' : 'I like apple',
 #   'words' : ['I', 'like', 'apple']}
 def data_processor(input_path, mode = 'json'):
-    if(mode == 'json'):
+    if mode == 'json':
         raw_json = json_reader(input_path)
         articles = json_parser(raw_json)
         for i in articles:
@@ -90,3 +116,12 @@ def data_processor(input_path, mode = 'json'):
             i['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(i['words']))))
         
         return articles
+
+    elif mode == 'xml':
+        tags = xml_reader(input_path, 'p')
+        abstract = xml_string_parser(tags[3].string)
+        abstract['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(abstract['words']))))
+
+        return abstract
+
+        

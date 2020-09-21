@@ -20,6 +20,18 @@ def import_json(request):
 
     return JsonResponse({"Import file" : "Json", "Status" : "Success"})
 
+def import_xml(request):
+    file_path = 'D:\\work\\ir_hw\\hw1\\test.xml'
+    article_word = data_processor(file_path, mode = 'xml')
+    a = Article(abstract = article_word['sentence'])
+    a.save()
+    for j in article_word['words']:
+        w = Word(context = j)
+        w.save()
+        w.position.add(a)
+
+    return JsonResponse({"Import file" : "xml", "Status" : "Success"})
+
 def show_articles(request):
     all_articles = Article.objects.all()
     # structure of words
