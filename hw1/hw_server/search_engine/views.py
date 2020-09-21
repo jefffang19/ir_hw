@@ -56,8 +56,27 @@ def get_keywords(request):
             # parse and clean (stemming..etc) the keywords
             keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
             # search keywords in db (Model => Word)
-            #all_words = Word.objects.filter()
-            return HttpResponse(keywords_cleaned)
+            all_words = []
+            for i in keywords_cleaned:
+                # retrive all word
+                q_set = Word.objects.filter(context=i[0])
+                for j in q_set:
+                    temp = {}
+                    temp['word'] = j.context # keyword name
+                    temp['pos'] = j.pos_in_a_article # position in the doc
+                    # look up in which docs
+                    # get many to many table
+                    q2 = j.position.all()
+                    t = []
+                    for k in q2:
+                        t.append(k.pk)
+
+                    temp['docs'] = t
+
+
+                    all_words.append(temp)
+            
+            return HttpResponse(all_words)
 
     # GET => create blank form
     else: 
