@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Article, Word
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
+from .forms import WordForm
 
 from search_engine.parsing_utils import data_processor
 
@@ -44,3 +45,19 @@ def show_articles(request):
     words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : [1,2]  , 'keywords' : {1:[2, 4] ,2:[4]}}
     
     return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
+
+def get_keywords(request):
+
+    # POST => process the form data from user
+    if request.method == 'POST':
+        form = WordForm(request.POST)
+        if form.is_valid():
+            # search keywords in db (Model => Word)
+            #all_words = Word.objects.filter()
+            return HttpResponse(form.cleaned_data['keywords'])
+
+    # GET => create blank form
+    else: 
+        form = WordForm()
+
+    return render(request, 'search_engine/search_page.html', {'form' : form})
