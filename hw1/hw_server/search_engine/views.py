@@ -14,7 +14,7 @@ def import_json(request):
         a = Article(abstract = i['sentence'])
         a.save()
         for j in i['words']:
-            w = Word(context = j)
+            w = Word(context = j[0], pos_in_a_article = j[1])
             w.save()
             w.position.add(a)
 
@@ -26,7 +26,7 @@ def import_xml(request):
     a = Article(abstract = article_word['sentence'])
     a.save()
     for j in article_word['words']:
-        w = Word(context = j)
+        w = Word(context = j[0], pos_in_a_article = j[1])
         w.save()
         w.position.add(a)
 
