@@ -20,7 +20,8 @@ def import_json(request):
             w.save()
             w.position.add(a)
 
-    return JsonResponse({"Import file" : "Json", "Status" : "Success"})
+    # return JsonResponse({"Import file" : "Json", "Status" : "Success"})
+    return show_articles(request)
 
 def import_xml(request):
     file_path = 'temp_uploaded'
@@ -32,7 +33,8 @@ def import_xml(request):
         w.save()
         w.position.add(a)
 
-    return JsonResponse({"Import file" : "xml", "Status" : "Success"})
+    # return JsonResponse({"Import file" : "xml", "Status" : "Success"})
+    return show_articles(request)
 
 def show_articles(request):
     all_articles = Article.objects.all()
