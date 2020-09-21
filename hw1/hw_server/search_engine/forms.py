@@ -5,4 +5,5 @@ class WordForm(forms.Form):
 
 class UploadFileForm(forms.Form):
     tag = forms.CharField(label = 'Tag')
+    mode = forms.CharField(label = 'Mode')
     file = forms.FileField(label = 'File')

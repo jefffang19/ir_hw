@@ -4,13 +4,13 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from .forms import WordForm, UploadFileForm
 
-from search_engine.parsing_utils import data_processor
+from search_engine.parsing_utils import data_processor, handle_uploaded_file
 from search_engine.parsing_utils import string_to_tokens
 
 
 # Create your views here.
 def import_json(request):
-    file_path = 'D:\\work\\ir_hw\\hw1\\mydata.json'
+    file_path = 'temp_uploaded'
     article_words = data_processor(file_path)
     for i in article_words:
         a = Article(abstract = i['sentence'])
@@ -23,7 +23,7 @@ def import_json(request):
     return JsonResponse({"Import file" : "Json", "Status" : "Success"})
 
 def import_xml(request):
-    file_path = 'D:\\work\\ir_hw\\hw1\\test.xml'
+    file_path = 'temp_uploaded'
     article_word = data_processor(file_path, mode = 'xml')
     a = Article(abstract = article_word['sentence'])
     a.save()
@@ -114,7 +114,15 @@ def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            return HttpResponse('upload success')
+            # store the uploaded file
+            handle_uploaded_file(request.FILES['file'])
+            if request.POST['mode'] == 'xml':
+               return import_xml(request)
+            elif request.POST['mode'] == 'json':
+                return import_json(request)
+            else:
+                return HttpResponse('upload success, but wrong mode')
+            
 
     else:
         form = UploadFileForm()

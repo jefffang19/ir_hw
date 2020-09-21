@@ -136,4 +136,8 @@ def string_to_tokens(in_str):
     return keywords
 
 
-        
+# handle a uploaded file to server
+def handle_uploaded_file(f):
+    with open('temp_uploaded', 'wb+') as dest:
+        for chunk in f.chunks():
+            dest.write(chunk)
