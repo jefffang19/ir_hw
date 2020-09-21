@@ -10,4 +10,5 @@ urlpatterns = [
     path('show_articles', views.show_articles, name = 'show_articles'),
     # path('search_page', TemplateView.as_view(template_name = 'search_engine/search_page.html') ),
     path('search_page', views.get_keywords, name = 'search_page'),
+    path('upload_file', views.upload_file, name = 'upload_file'),
 ]

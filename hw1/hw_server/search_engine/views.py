@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Article, Word
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
-from .forms import WordForm
+from .forms import WordForm, UploadFileForm
 
 from search_engine.parsing_utils import data_processor
 from search_engine.parsing_utils import string_to_tokens
@@ -109,3 +109,15 @@ def get_keywords(request):
         form = WordForm()
 
     return render(request, 'search_engine/search_page.html', {'form' : form})
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            return HttpResponse('upload success')
+
+    else:
+        form = UploadFileForm()
+
+    return render(request, 'search_engine/upload_file.html', {'form' : form})
+    
