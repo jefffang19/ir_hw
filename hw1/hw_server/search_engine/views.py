@@ -43,7 +43,7 @@ def show_articles(request):
     #   'keywords' : a dict of which word to highlight in the corresponding line,
     #                   key is int , value is list 
     # }
-    words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : [1,2]  , 'keywords' : {1:[2, 4] ,2:[4]}}
+    words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : []  , 'keywords' : {}}
     
     return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
 
@@ -98,7 +98,7 @@ def get_keywords(request):
 
             
 
-            words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : key_docs  , 'keywords' : key_pos }
+            words = {'articles' : [i.abstract.split(' ') for i in all_articles] , 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
     
             return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
 
