@@ -66,17 +66,43 @@ def get_keywords(request):
                     temp['pos'] = j.pos_in_a_article # position in the doc
                     # look up in which docs
                     # get many to many table
-                    q2 = j.position.all()
-                    t = []
-                    for k in q2:
-                        t.append(k.pk)
+                    q_art = j.position.get()
 
-                    temp['docs'] = t
+                    # when calculating the which doc, we do ( pk - current_firstpk )
+                    q3 = Article.objects.filter()[0]
+                    article_firstpk = q3.pk
+
+                    temp['docs'] = q_art.pk - article_firstpk
 
 
                     all_words.append(temp)
             
-            return HttpResponse(all_words)
+            # now we render the show page
+            all_articles = Article.objects.all()
+
+            # make sure which docs has keywords
+            # format : [doc1, doc2, doc3] (type int)
+            key_docs = []
+            for i in all_words:
+                if i['docs'] not in key_docs:
+                    key_docs.append(i['docs'])
+
+            # make sure where the keywords are in the coresponding doc
+            # format : {doc1 : [pos1, pos2], doc2 : [pos3, pos4]}  (type int)
+            key_pos = {}
+            for i in all_words:
+                if i['docs'] not in key_pos.keys():
+                    key_pos[i['docs']] = [i['pos'],]
+                else:
+                    key_pos[i['docs']].append(i['pos'])
+
+            
+
+            words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : key_docs  , 'keywords' : key_pos }
+    
+            return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
+
+            # return HttpResponse(all_words)
 
     # GET => create blank form
     else: 
