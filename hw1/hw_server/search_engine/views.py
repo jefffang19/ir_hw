@@ -146,11 +146,12 @@ def show_articles(request, first=False):
         aId = 0
         if all_articles[0].articleId != None:
             xml_one_article = []
-            head = ""
-            for i in all_articles[0].label.split(' '):
-                head = head + i + ' '
-            xml_one_article.append("[ {}]:".format(head))
             for i in all_articles:
+                head = ""
+                for j in i.label.split(' '):
+                    head = head + j + ' '
+                xml_one_article.append("[ {}]".format(head))
+
                 if i.articleId == aId:
                     for j in i.abstract.split(' '):
                         xml_one_article.append(j)
@@ -162,7 +163,7 @@ def show_articles(request, first=False):
                     head = ""
                     for j in i.label.split(' '):
                         head = head + j + ' '
-                    xml_one_article.append("[ {}]:".format(head))
+                    xml_one_article.append("[ {}]".format(head))
                     for j in i.abstract.split(' '):
                         xml_one_article.append(j)
                 
@@ -185,17 +186,21 @@ def show_articles(request, first=False):
             aId = 0
 
             for sc in all_articles:
-                if i.articleId == aId:
+                if sc.articleId == aId:
                     tot_sc += count_sent(sc.abstract)
                     sep_temp += count_sent(sc.abstract)
                 else: 
                     sep_sc.append(sep_temp)
                     sep_temp = 0
-                    aId = i.articleId
+                    aId = sc.articleId
+                    tot_sc += count_sent(sc.abstract)
+                    sep_temp += count_sent(sc.abstract)
 
             sep_sc.append(sep_temp)
 
             words = {'form':form, 'articles' : xml_all_articles ,'tot_sc' : tot_sc ,'sep_sc':sep_sc , 'len_article' : len_article  , 'len_words' : tot_words, 'sep_words':len_sep_words,}
+
+            # return JsonResponse(words)
 
             return render(request, 'search_engine/show_articles.html', words)
 
@@ -280,13 +285,14 @@ def get_keywords(request):
             # return HttpResponse(all_words)
 
     # GET => create blank form
-    else: 
+    else:
         form = WordForm()
 
     return render(request, 'search_engine/search_page.html', {'form' : form})
 
 def upload_file(request):
     if request.method == 'POST':
+        del_everything(request)
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             # store the uploaded file
@@ -304,4 +310,7 @@ def upload_file(request):
         form = UploadFileForm()
 
     return render(request, 'search_engine/upload_file_abstract.html', {'form' : form})
-    
+
+def del_everything(request):
+    Article.objects.all().delete()
+    return
