@@ -9,6 +9,7 @@ from search_engine.parsing_utils import string_to_tokens
 
 
 # Create your views here.
+# api function
 def import_json(request):
     file_path = 'temp_uploaded'
     article_words = data_processor(file_path, mode = 'json', tag = request.POST['tag'])
@@ -36,6 +37,7 @@ def import_xml(request):
     # return JsonResponse({"Import file" : "xml", "Status" : "Success"})
     return show_articles(request)
 
+# api function
 def show_articles(request):
     # POST => process the form data from user
     if request.method == 'POST':
@@ -68,6 +70,16 @@ def show_articles(request):
             # now we render the show page
             all_articles = Article.objects.all()
 
+            len_article = len(all_articles) #count the num of articles
+            arts = [i.abstract.split(' ') for i in all_articles] # articles break into words
+            # count the num of words
+            tot_words = 0
+            len_sep_words = []
+            
+            for wo in arts:
+                tot_words += len(wo)
+                len_sep_words.append(len(wo))
+
             # make sure which docs has keywords
             # format : [doc1, doc2, doc3] (type int)
             key_docs = []
@@ -87,7 +99,10 @@ def show_articles(request):
             
             form = WordForm()
 
-            words = {'form' : form, 'articles' : [i.abstract.split(' ') for i in all_articles] , 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
+
+            #count
+
+            words = {'form' : form, 'len_article': len_article , 'len_words' : tot_words, 'sep_words':len_sep_words, 'articles' :  arts, 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
 
             # debug
             # return JsonResponse({'keylines' : key_docs  , 'keywords' : key_pos})
@@ -110,6 +125,8 @@ def show_articles(request):
         # return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
         return render(request, 'search_engine/show_articles.html', {'form' : form, 'articles' : [i.abstract.split(' ') for i in all_articles]})
 
+
+# deprecated
 def get_keywords(request):
 
     # POST => process the form data from user

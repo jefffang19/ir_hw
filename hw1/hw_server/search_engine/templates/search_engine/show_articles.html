@@ -103,7 +103,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <div class="h6 text-muted">Articles</div>
-                            <div class="h5">5</div>
+                            <div class="h5">{{ len_article }}</div>
                         </li>
                         <li class="list-group-item">
                             <div class="h6 text-muted">Sentences</div>
@@ -111,7 +111,7 @@
                         </li>
                         <li class="list-group-item">
                             <div class="h6 text-muted">Words</div>
-                            <div class="h5">6758</div>
+                            <div class="h5">{{ len_words }}</div>
                         </li>
                     </ul>
                 </div>
@@ -151,7 +151,7 @@
 
                             </div>
                             <div class="card-body">
-                                <div class="text-muted h7 mb-2">x words y Sentences</div>
+                                <div class="text-muted h7 mb-2">{{ sep_words|get_element:forloop.counter0 }} words y Sentences</div>
                                 {% comment %} <a class="card-link" href="#">
                                     <h5 class="card-title">Lorem ipsum dolor sit amet, consectetur adip.</h5>
                                 </a> {% endcomment %}
