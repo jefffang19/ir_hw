@@ -28,17 +28,22 @@ def import_json(request):
 # api function
 def import_xml(request):
     file_path = 'temp_uploaded'
-    many_article_word = data_processor(file_path, mode = 'xml', tag = 'abstract')
+    many_article = data_processor(file_path, mode = 'xml', tag = 'abstract')
 
     # debug
-    return HttpResponse(many_article_word)
+    # return HttpResponse(many_article_word)
 
-    a = Article(abstract = article_word['sentence'])
-    a.save()
-    for j in article_word['words']:
-        w = Word(context = j[0], pos_in_a_article = j[1])
-        w.save()
-        w.position.add(a)
+    cnt = 0
+    for many_abstract in many_article:
+        for i in many_abstract:
+            a = Article(abstract = i['sentence'], label=i['label'], articleId=cnt)
+            a.save()
+            for j in i['words']:
+                w = Word(context = j[0], pos_in_a_article = j[1])
+                w.save()
+                w.position.add(a)
+        cnt += 1
+        
 
     # return JsonResponse({"Import file" : "xml", "Status" : "Success"})
     return show_articles(request, True)
@@ -135,6 +140,64 @@ def show_articles(request, first=False):
     else:
         form = WordForm()
         all_articles = Article.objects.all()
+
+        # xml has different rule
+        xml_all_articles = []
+        aId = 0
+        if all_articles[0].articleId != None:
+            xml_one_article = []
+            head = ""
+            for i in all_articles[0].label.split(' '):
+                head = head + i + ' '
+            xml_one_article.append("[ {}]:".format(head))
+            for i in all_articles:
+                if i.articleId == aId:
+                    for j in i.abstract.split(' '):
+                        xml_one_article.append(j)
+
+                else:
+                    xml_all_articles.append(xml_one_article)
+                    aId = i.articleId
+                    xml_one_article = []
+                    head = ""
+                    for j in i.label.split(' '):
+                        head = head + j + ' '
+                    xml_one_article.append("[ {}]:".format(head))
+                    for j in i.abstract.split(' '):
+                        xml_one_article.append(j)
+                
+            xml_all_articles.append(xml_one_article)
+            
+            # count article
+            len_article = len(xml_all_articles)
+
+            #count words
+            tot_words = 0
+            len_sep_words = []
+            for wo in xml_all_articles:
+                tot_words += len(wo)
+                len_sep_words.append(len(wo))
+
+            # count sent num
+            tot_sc = 0
+            sep_sc = []
+            sep_temp = 0
+            aId = 0
+
+            for sc in all_articles:
+                if i.articleId == aId:
+                    tot_sc += count_sent(sc.abstract)
+                    sep_temp += count_sent(sc.abstract)
+                else: 
+                    sep_sc.append(sep_temp)
+                    sep_temp = 0
+                    aId = i.articleId
+
+            sep_sc.append(sep_temp)
+
+            words = {'form':form, 'articles' : xml_all_articles ,'tot_sc' : tot_sc ,'sep_sc':sep_sc , 'len_article' : len_article  , 'len_words' : tot_words, 'sep_words':len_sep_words,}
+
+            return render(request, 'search_engine/show_articles.html', words)
 
         len_article = len(all_articles) #count the num of articles
         arts = [i.abstract.split(' ') for i in all_articles] # articles break into words
