@@ -12,7 +12,7 @@ from search_engine.parsing_utils import string_to_tokens
 # api function
 def import_json(request):
     file_path = 'temp_uploaded'
-    article_words = data_processor(file_path, mode = 'json', tag = request.POST['tag'])
+    article_words = data_processor(file_path, mode = 'json', tag = "tweet_text")
     for i in article_words:
         a = Article(abstract = i['sentence'])
         a.save()
@@ -28,7 +28,11 @@ def import_json(request):
 # api function
 def import_xml(request):
     file_path = 'temp_uploaded'
-    article_word = data_processor(file_path, mode = 'xml', tag = request.POST['tag'])
+    many_article_word = data_processor(file_path, mode = 'xml', tag = 'abstract')
+
+    # debug
+    return HttpResponse(many_article_word)
+
     a = Article(abstract = article_word['sentence'])
     a.save()
     for j in article_word['words']:

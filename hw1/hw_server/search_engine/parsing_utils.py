@@ -2,29 +2,50 @@ import json
 
 # for parsing xml file
 from bs4 import BeautifulSoup
-# read a xml file from path
-# return a list of found tags
-# use tags.string to get str
 def xml_reader(path, target_tag):
     f = open(path,'r',encoding="utf-8")
 
     raw = f.read()
     soup = BeautifulSoup(raw, 'lxml')
     tags = soup.find_all(target_tag)
-    return tags
+
+    # parse the abstract tag
+    abstracts = []
+    for abst in tags:
+        AbstractText = abst.find_all('abstracttext')
+
+        abstract_texts = []
+
+        for i in AbstractText:
+            if i.get('label') != None:
+                abstract_texts.append([i.get('label'), i.string])
+            else:
+                abstract_texts.append(['no_label', i.string])
+
+        abstracts.append(abstract_texts)
+
+    return abstracts
 
 # tokenlize a string from xml and store as a array (len = number of articles)
 # the element of array looks like
 # { 'sentence' : 'I like apple',
 #   'words' : ['I', 'like', 'apple']}
 def xml_string_parser(raw):
-    d = {'sentence' : raw,
-         'words' : []}
-    
-    for i in range(len(raw.split())):
-        d['words'].append( [raw.split()[i], i] )
+    many_articles = []
+    # many articles
+    for raw_art in raw:
+        same_article = []
+        for raw_label in raw_art:
+            d = {'label' : raw_label[0], 'sentence' : raw_label[1], 'words' : []}
+        
+            for i in range(len(d['sentence'].split())):
+                d['words'].append( [d['sentence'].split()[i], i] )
 
-    return d
+            same_article.append(d)
+
+        many_articles.append(same_article)
+
+    return many_articles
 
 
 # read a json file from path
@@ -121,11 +142,19 @@ def data_processor(input_path, mode = 'json', tag = 'p'):
         return articles
 
     elif mode == 'xml':
-        tags = xml_reader(input_path, tag)
-        abstract = xml_string_parser(tags[3].string)
-        abstract['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(abstract['words']))))
+        abst = xml_reader(input_path, tag)
 
-        return abstract
+        many_articles = xml_string_parser(abst)
+
+        new_many_articles = []
+        for many_abstracts in many_articles:
+            new_many_abstracts = []
+            for i in many_abstracts:
+                i['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(i['words']))))
+                new_many_abstracts.append(i)
+            new_many_articles.append(many_abstracts)
+
+        return new_many_articles
 
 # parse the user input form into tokens
 # return a list

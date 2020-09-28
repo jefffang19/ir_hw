@@ -12,7 +12,7 @@ class WordForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Search', css_class='btn btn-outline-primary'))
 
 class UploadFileForm(forms.Form):
-    tag = forms.CharField(label = 'Tag')
+    # tag = forms.CharField(label = 'Tag')
     mode = forms.CharField(label = 'Mode')
     file = forms.FileField(label = 'File')
 
