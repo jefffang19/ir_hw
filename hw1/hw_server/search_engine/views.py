@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from .forms import WordForm, UploadFileForm
 
-from search_engine.parsing_utils import data_processor, handle_uploaded_file
+from search_engine.parsing_utils import data_processor, handle_uploaded_file, count_sent
 from search_engine.parsing_utils import string_to_tokens
 
 
@@ -22,8 +22,10 @@ def import_json(request):
             w.position.add(a)
 
     # return JsonResponse({"Import file" : "Json", "Status" : "Success"})
-    return show_articles(request)
 
+    return show_articles(request, True)
+
+# api function
 def import_xml(request):
     file_path = 'temp_uploaded'
     article_word = data_processor(file_path, mode = 'xml', tag = request.POST['tag'])
@@ -35,12 +37,13 @@ def import_xml(request):
         w.position.add(a)
 
     # return JsonResponse({"Import file" : "xml", "Status" : "Success"})
-    return show_articles(request)
+    return show_articles(request, True)
 
-# api function
-def show_articles(request):
+# main func
+def show_articles(request, first=False):
     # POST => process the form data from user
-    if request.method == 'POST':
+    # if request.method == 'POST':
+    if not first and request.method == 'POST':
         form = WordForm(request.POST)
         if form.is_valid():
             # parse and clean (stemming..etc) the keywords
@@ -72,6 +75,14 @@ def show_articles(request):
 
             len_article = len(all_articles) #count the num of articles
             arts = [i.abstract.split(' ') for i in all_articles] # articles break into words
+            
+            # count sentence num
+            tot_sc = 0
+            sep_sc = []
+            for sc in all_articles:
+                tot_sc += count_sent(sc.abstract)
+                sep_sc.append(count_sent(sc.abstract))
+
             # count the num of words
             tot_words = 0
             len_sep_words = []
@@ -102,28 +113,45 @@ def show_articles(request):
 
             #count
 
-            words = {'form' : form, 'len_article': len_article , 'len_words' : tot_words, 'sep_words':len_sep_words, 'articles' :  arts, 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
+            words = {'form' : form, 'len_article': len_article ,'tot_sc' : tot_sc ,'sep_sc':sep_sc , 'len_words' : tot_words, 'sep_words':len_sep_words, 'articles' :  arts, 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
+            # structure of words
+            # {
+            #   'articles' : a list of articles to show on template,
+            #   'keylines' : a list of which line has words to highlight,
+            #   'keywords' : a dict of which word to highlight in the corresponding line,
+            #                   key is int , value is list 
+            # }
 
             # debug
             # return JsonResponse({'keylines' : key_docs  , 'keywords' : key_pos})
 
             return render(request, 'search_engine/show_articles.html', words)
     
-    # GET => create blank form
+
     else:
         form = WordForm()
         all_articles = Article.objects.all()
-        # structure of words
-        # {
-        #   'articles' : a list of articles to show on template,
-        #   'keylines' : a list of which line has words to highlight,
-        #   'keywords' : a dict of which word to highlight in the corresponding line,
-        #                   key is int , value is list 
-        # }
-        words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : []  , 'keywords' : {}}
+
+        len_article = len(all_articles) #count the num of articles
+        arts = [i.abstract.split(' ') for i in all_articles] # articles break into words
+        # count the num of words
+        tot_words = 0
+        len_sep_words = []
+
+        # count sent num
+        tot_sc = 0
+        sep_sc = []
+        for sc in all_articles:
+            tot_sc += count_sent(sc.abstract)
+            sep_sc.append(count_sent(sc.abstract))
+        
+        for wo in arts:
+            tot_words += len(wo)
+            len_sep_words.append(len(wo))
+        words = {'form':form, 'articles' : [i.abstract.split(' ') for i in all_articles] ,'tot_sc' : tot_sc ,'sep_sc':sep_sc , 'len_article' : len_article  , 'len_words' : tot_words, 'sep_words':len_sep_words,}
         
         # return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
-        return render(request, 'search_engine/show_articles.html', {'form' : form, 'articles' : [i.abstract.split(' ') for i in all_articles]})
+        return render(request, 'search_engine/show_articles.html', words)
 
 
 # deprecated

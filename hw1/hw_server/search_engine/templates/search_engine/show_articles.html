@@ -70,16 +70,6 @@
         
 <nav class="navbar navbar-light bg-white">
         <a href="#" class="navbar-brand">IIR Homework</a>
-        {% comment %} <form class="form-inline">
-            <div class="input-group">
-                <input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" type="button" id="button-addon2">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </div>
-        </form> {% endcomment %}
         <form action="{% url "show_articles" %}" method="post">
             <div class="input-group">
                 {% csrf_token %}
@@ -107,7 +97,7 @@
                         </li>
                         <li class="list-group-item">
                             <div class="h6 text-muted">Sentences</div>
-                            <div class="h5">6758</div>
+                            <div class="h5">{{ tot_sc }}</div>
                         </li>
                         <li class="list-group-item">
                             <div class="h6 text-muted">Words</div>
@@ -151,7 +141,7 @@
 
                             </div>
                             <div class="card-body">
-                                <div class="text-muted h7 mb-2">{{ sep_words|get_element:forloop.counter0 }} words y Sentences</div>
+                                <div class="text-muted h7 mb-2">{{ sep_words|get_element:forloop.counter0 }} words {{ sep_sc|get_element:forloop.counter0 }} Sentences</div>
                                 {% comment %} <a class="card-link" href="#">
                                     <h5 class="card-title">Lorem ipsum dolor sit amet, consectetur adip.</h5>
                                 </a> {% endcomment %}

@@ -141,3 +141,9 @@ def handle_uploaded_file(f):
     with open('temp_uploaded', 'wb+') as dest:
         for chunk in f.chunks():
             dest.write(chunk)
+
+
+def count_sent(abstract):
+    import nltk
+    temp = nltk.sent_tokenize(abstract)
+    return len(temp)
