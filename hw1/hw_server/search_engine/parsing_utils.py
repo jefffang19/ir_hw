@@ -86,7 +86,7 @@ def words_to_lower(word_list):
     return [ [i[0].lower(), i[1]] for i in word_list]
 
 
-def remove_stopords(word_list, stopword_path = 'D:\\work\\ir_hw\\hw1\\stop_words.txt'):
+def remove_stopords(word_list, stopword_path = 'search_engine/stop_words.txt'):
     f = open(stopword_path)
     stop_words = f.read().split('\n')
     # now we create a new word set without the stop words
