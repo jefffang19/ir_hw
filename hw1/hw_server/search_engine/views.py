@@ -37,17 +37,78 @@ def import_xml(request):
     return show_articles(request)
 
 def show_articles(request):
-    all_articles = Article.objects.all()
-    # structure of words
-    # {
-    #   'articles' : a list of articles to show on template,
-    #   'keylines' : a list of which line has words to highlight,
-    #   'keywords' : a dict of which word to highlight in the corresponding line,
-    #                   key is int , value is list 
-    # }
-    words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : []  , 'keywords' : {}}
+    # POST => process the form data from user
+    if request.method == 'POST':
+        form = WordForm(request.POST)
+        if form.is_valid():
+            # parse and clean (stemming..etc) the keywords
+            keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
+            # search keywords in db (Model => Word)
+            all_words = []
+            for i in keywords_cleaned:
+                # retrive all word
+                q_set = Word.objects.filter(context=i[0])
+                for j in q_set:
+                    temp = {}
+                    temp['word'] = j.context # keyword name
+                    temp['pos'] = j.pos_in_a_article # position in the doc
+                    # look up in which docs
+                    # get many to many table
+                    q_art = j.position.get()
+
+                    # when calculating the which doc, we do ( pk - current_firstpk )
+                    q3 = Article.objects.filter()[0]
+                    article_firstpk = q3.pk
+
+                    temp['docs'] = q_art.pk - article_firstpk
+
+
+                    all_words.append(temp)
+            
+            # now we render the show page
+            all_articles = Article.objects.all()
+
+            # make sure which docs has keywords
+            # format : [doc1, doc2, doc3] (type int)
+            key_docs = []
+            for i in all_words:
+                if i['docs'] not in key_docs:
+                    key_docs.append(i['docs'])
+
+            # make sure where the keywords are in the coresponding doc
+            # format : {doc1 : [pos1, pos2], doc2 : [pos3, pos4]}  (type int)
+            key_pos = {}
+            for i in all_words:
+                if i['docs'] not in key_pos.keys():
+                    key_pos[i['docs']] = [i['pos'],]
+                else:
+                    key_pos[i['docs']].append(i['pos'])
+
+            
+            form = WordForm()
+
+            words = {'form' : form, 'articles' : [i.abstract.split(' ') for i in all_articles] , 'num_result' : len(all_words) , 'keylines' : key_docs  , 'keywords' : key_pos }
+
+            # debug
+            # return JsonResponse({'keylines' : key_docs  , 'keywords' : key_pos})
+
+            return render(request, 'search_engine/show_articles.html', words)
     
-    return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
+    # GET => create blank form
+    else:
+        form = WordForm()
+        all_articles = Article.objects.all()
+        # structure of words
+        # {
+        #   'articles' : a list of articles to show on template,
+        #   'keylines' : a list of which line has words to highlight,
+        #   'keywords' : a dict of which word to highlight in the corresponding line,
+        #                   key is int , value is list 
+        # }
+        words = {'articles' : [i.abstract.split(' ') for i in all_articles] ,'keylines' : []  , 'keywords' : {}}
+        
+        # return HttpResponse(loader.get_template('search_engine/show_articles.html').render(words , request))
+        return render(request, 'search_engine/show_articles.html', {'form' : form, 'articles' : [i.abstract.split(' ') for i in all_articles]})
 
 def get_keywords(request):
 

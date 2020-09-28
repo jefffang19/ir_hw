@@ -1,6 +1,8 @@
 {% comment %} <h1> {{ num_result }} Matched Result</h1> {% endcomment %}
 {% load search_extra %}
 
+{% load crispy_forms_tags %}
+
 
 <!doctype html>
 <html>
@@ -68,7 +70,7 @@
         
 <nav class="navbar navbar-light bg-white">
         <a href="#" class="navbar-brand">IIR Homework</a>
-        <form class="form-inline">
+        {% comment %} <form class="form-inline">
             <div class="input-group">
                 <input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
                 <div class="input-group-append">
@@ -76,6 +78,13 @@
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
+            </div>
+        </form> {% endcomment %}
+        <form action="{% url "show_articles" %}" method="post">
+            <div class="input-group">
+                {% csrf_token %}
+                {% crispy form %}
+                {% comment %} <input type="submit" value="submit"> {% endcomment %}
             </div>
         </form>
     </nav>
