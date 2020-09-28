@@ -130,5 +130,5 @@ def upload_file(request):
     else:
         form = UploadFileForm()
 
-    return render(request, 'search_engine/upload_file.html', {'form' : form})
+    return render(request, 'search_engine/upload_file_abstract.html', {'form' : form})
     
