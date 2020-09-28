@@ -14,13 +14,13 @@ def xml_reader(path, target_tag):
     for abst in tags:
         AbstractText = abst.find_all('abstracttext')
 
-        abstract_texts = []
+        abstract_texts = ""
 
         for i in AbstractText:
             if i.get('label') != None:
-                abstract_texts.append([i.get('label'), i.string])
+                abstract_texts= abstract_texts + ' [' + i.get('label') + '] ' + i.string
             else:
-                abstract_texts.append(['no_label', i.string])
+                abstract_texts = abstract_texts + ' ' + i.string
 
         abstracts.append(abstract_texts)
 
@@ -34,16 +34,12 @@ def xml_string_parser(raw):
     many_articles = []
     # many articles
     for raw_art in raw:
-        same_article = []
-        for raw_label in raw_art:
-            d = {'label' : raw_label[0], 'sentence' : raw_label[1], 'words' : []}
-        
-            for i in range(len(d['sentence'].split())):
-                d['words'].append( [d['sentence'].split()[i], i] )
+        d = {'sentence' : raw_art, 'words' : []}
+    
+        for i in range(len(d['sentence'].split())):
+            d['words'].append( [d['sentence'].split()[i], i] )
 
-            same_article.append(d)
-
-        many_articles.append(same_article)
+        many_articles.append(d)
 
     return many_articles
 
@@ -147,12 +143,9 @@ def data_processor(input_path, mode = 'json', tag = 'p'):
         many_articles = xml_string_parser(abst)
 
         new_many_articles = []
-        for many_abstracts in many_articles:
-            new_many_abstracts = []
-            for i in many_abstracts:
-                i['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(i['words']))))
-                new_many_abstracts.append(i)
-            new_many_articles.append(many_abstracts)
+        for i in many_articles:
+            i['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(i['words']))))
+            new_many_articles.append(i)
 
         return new_many_articles
 
