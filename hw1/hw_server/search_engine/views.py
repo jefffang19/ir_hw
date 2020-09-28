@@ -2,16 +2,16 @@ from django.shortcuts import render
 from .models import Article, Word
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
-from .forms import WordForm
+from .forms import WordForm, UploadFileForm
 
-from search_engine.parsing_utils import data_processor
+from search_engine.parsing_utils import data_processor, handle_uploaded_file
 from search_engine.parsing_utils import string_to_tokens
 
 
 # Create your views here.
 def import_json(request):
-    file_path = 'D:\\work\\ir_hw\\hw1\\mydata.json'
-    article_words = data_processor(file_path)
+    file_path = 'temp_uploaded'
+    article_words = data_processor(file_path, mode = 'json', tag = request.POST['tag'])
     for i in article_words:
         a = Article(abstract = i['sentence'])
         a.save()
@@ -20,11 +20,12 @@ def import_json(request):
             w.save()
             w.position.add(a)
 
-    return JsonResponse({"Import file" : "Json", "Status" : "Success"})
+    # return JsonResponse({"Import file" : "Json", "Status" : "Success"})
+    return show_articles(request)
 
 def import_xml(request):
-    file_path = 'D:\\work\\ir_hw\\hw1\\test.xml'
-    article_word = data_processor(file_path, mode = 'xml')
+    file_path = 'temp_uploaded'
+    article_word = data_processor(file_path, mode = 'xml', tag = request.POST['tag'])
     a = Article(abstract = article_word['sentence'])
     a.save()
     for j in article_word['words']:
@@ -32,7 +33,8 @@ def import_xml(request):
         w.save()
         w.position.add(a)
 
-    return JsonResponse({"Import file" : "xml", "Status" : "Success"})
+    # return JsonResponse({"Import file" : "xml", "Status" : "Success"})
+    return show_articles(request)
 
 def show_articles(request):
     all_articles = Article.objects.all()
@@ -109,3 +111,24 @@ def get_keywords(request):
         form = WordForm()
 
     return render(request, 'search_engine/search_page.html', {'form' : form})
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            # store the uploaded file
+            handle_uploaded_file(request.FILES['file'])
+            if request.POST['mode'] == 'xml':
+               return import_xml(request)
+            elif request.POST['mode'] == 'json':
+                return import_json(request)
+            else:
+                return HttpResponse('upload success, but wrong mode')
+        else:
+            return HttpResponse('upload unsuccessful')
+
+    else:
+        form = UploadFileForm()
+
+    return render(request, 'search_engine/upload_file.html', {'form' : form})
+    

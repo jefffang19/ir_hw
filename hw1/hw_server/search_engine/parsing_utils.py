@@ -39,12 +39,12 @@ def json_reader(path):
 # the element of array looks like
 # { 'sentence' : 'I like apple',
 #   'words' : ['I', 'like', 'apple']}
-def json_parser(json_dict):
+def json_parser(json_dict, tag):
     result = []
 
     for i in json_dict:
         sentence = []
-        for c in i['tweet_text']:
+        for c in i[tag]:
             if(c.isascii()):
                 sentence.append(c)
                 
@@ -110,10 +110,10 @@ def stemming(word_list):
 # { 'sentence' : '\n I like apple',
 #   'words' : [['I',1], ['like',2], ['apple',3]],
 # }
-def data_processor(input_path, mode = 'json'):
+def data_processor(input_path, mode = 'json', tag = 'p'):
     if mode == 'json':
         raw_json = json_reader(input_path)
-        articles = json_parser(raw_json)
+        articles = json_parser(raw_json, tag)
         for i in articles:
             # process words list
             i['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(i['words']))))
@@ -121,7 +121,7 @@ def data_processor(input_path, mode = 'json'):
         return articles
 
     elif mode == 'xml':
-        tags = xml_reader(input_path, 'p')
+        tags = xml_reader(input_path, tag)
         abstract = xml_string_parser(tags[3].string)
         abstract['words'] = stemming(remove_stopords(words_to_lower(remove_puncuation(abstract['words']))))
 
@@ -136,4 +136,8 @@ def string_to_tokens(in_str):
     return keywords
 
 
-        
+# handle a uploaded file to server
+def handle_uploaded_file(f):
+    with open('temp_uploaded', 'wb+') as dest:
+        for chunk in f.chunks():
+            dest.write(chunk)
