@@ -80,7 +80,23 @@ def show_articles(request, first=False):
             all_articles = Article.objects.all()
 
             len_article = len(all_articles) #count the num of articles
-            arts = [i.abstract.split(' ') for i in all_articles] # articles break into words
+
+            arts = []
+            _str = ""
+
+            # a bug happened because \n
+            for i in all_articles:
+                for j in i.abstract:
+                    if(j != '\n'):
+                        _str += j
+                    else:
+                        _str += ' '
+                    
+                arts.append(_str)
+                _str = ""
+
+
+            arts = [i.split(' ') for i in arts] # articles break into words
             
             # count sentence num
             tot_sc = 0

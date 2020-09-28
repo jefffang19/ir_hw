@@ -34,10 +34,14 @@ def xml_string_parser(raw):
     many_articles = []
     # many articles
     for raw_art in raw:
+        # get rid of \n
+        for n in range(len(raw_art)):
+            if raw_art[n] == '\n':
+                raw_art[n] == ' '
         d = {'sentence' : raw_art, 'words' : []}
     
-        for i in range(len(d['sentence'].split())):
-            d['words'].append( [d['sentence'].split()[i], i] )
+        for i in range(len(d['sentence'].split(' '))):
+            d['words'].append( [d['sentence'].split(' ')[i], i] )
 
         many_articles.append(d)
 
