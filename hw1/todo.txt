@@ -1,0 +1,25 @@
+xml 讀檔有bug
+
+Pubmed的<tag>要再改善
+Pubmed xml只要<Abstract>
+<Abstract>
+	<AbstractText ...>
+		Paragraph
+
+Twitter json就是["Tweet-text"]
+
+
+計算paragraph數，句子數，word數，char count
+
+
+inverted-index和stemming這次先加分
+
+之後可能要做爬蟲
+
+可以顯示inverted-index的前端頁面
+
+one-page summery:
+解釋自己做了甚麼
+enviroment
+specs
+example output
