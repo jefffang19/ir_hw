@@ -23,12 +23,15 @@
 	<button id="randomizeData">Randomize Data</button>
 	<script>
 		var color = Chart.helpers.color;
+		var top_freq = {{ top_freq|escapejs}}
+		var other_freq = {{ other_freq|escapejs }}
+
 		function generateData(par) {
 			var data = [];
 			
 			data.push({
 				x: par,
-				y: 2*par
+				y: top_freq[par]
 			});
 			
 			return data;
@@ -37,10 +40,10 @@
 		function generateOtherData() {
 			var data = [];
 			
-			for (var i = 0; i < 10000 ; i++){
+			for (var i = 0; i < other_freq.length ; i++){
 				data.push({
-					x: i * 1000,
-					y: 1
+					x: i+100,
+					y: other_freq[i]
 				});
 			}
 			return data;
@@ -100,5 +103,6 @@
 			window.myScatter.update();
 		});
 	</script>
+	{{ top_words }}
 </body>
 </html>

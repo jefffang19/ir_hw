@@ -332,7 +332,17 @@ def origin_zipf(request):
     # sort the dict by value
     m = {k : v for k, v in sorted(m.items(), key=lambda  item: item[1], reverse=True)}
 
-    # return JsonResponse({'words' : list(m.keys()), 'freq' : list(m.values())})
 
-    return render(request, 'search_engine/chart.html', {'words' : list(m.keys()), 'freq' : list(m.values())})
+    top100_words = list(m.keys())[:100]
+    # top100_words = {range(100)[i] : top100_words[i] for i in range(100)}
+    top100_freq = list(m.values())[:100]
+    # top100_freq = {range(100)[i] : top100_words[i] for i in range(100)}
+    other_words = list(m.keys())[100:]
+    # other_words = {range(len(other_words))[i] : other_words[i] for i in range(len(other_words))}
+    other_freq = list(m.values())[100:]
+    # other_freq = {range(len(other_freq))[i] : other_freq[i] for i in range(len(other_freq))}
+
+    # return JsonResponse({'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+
+    return render(request, 'search_engine/chart.html', {'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
