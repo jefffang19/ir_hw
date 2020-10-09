@@ -1,0 +1,104 @@
+{% load static %}
+
+<html lang="en">
+<head>
+
+	<title>Scatter Chart</title>
+	<script src={% static "js/chart.js" %}></script>
+	<script src={% static "js/chart_utils.js" %}></script>
+
+		<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+
+</head>
+<body>
+	<div style="width:75%">
+		<canvas id="canvas"></canvas>
+	</div>
+	<button id="randomizeData">Randomize Data</button>
+	<script>
+		var color = Chart.helpers.color;
+		function generateData(par) {
+			var data = [];
+			
+			data.push({
+				x: par,
+				y: 2*par
+			});
+			
+			return data;
+		}
+		
+		function generateOtherData() {
+			var data = [];
+			
+			for (var i = 0; i < 10000 ; i++){
+				data.push({
+					x: i * 1000,
+					y: 1
+				});
+			}
+			return data;
+			
+		}
+		
+		function getDataSet() {
+			var dataset = [];
+			for (var i = 0; i < 100 ; i++){
+				dataset.push({label: i,
+							backgroundColor: getRandomColor(),
+							data: generateData(i)})
+			}
+			
+			dataset.push({label: "other",
+				backgroundColor: getRandomColor(),
+				data: generateOtherData() })
+			return dataset;
+		}
+		
+		function getRandomColor() {
+			var letters = '0123456789ABCDEF'.split('');
+			var color = '#';
+			for (var i = 0; i < 6; i++ ) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+		
+
+		var scatterChartData = {
+			datasets : getDataSet(),
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myScatter = Chart.Scatter(ctx, {
+				data: scatterChartData,
+				options: {
+					title: {
+						display: true,
+						text: 'Chart.js Scatter Chart'
+					},
+				}
+			});
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			scatterChartData.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return {
+						x: randomScalingFactor(),
+						y: randomScalingFactor()
+					};
+				});
+			});
+			window.myScatter.update();
+		});
+	</script>
+</body>
+</html>

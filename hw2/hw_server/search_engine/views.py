@@ -317,3 +317,7 @@ def zipf(request):
     # freq = list(m.items())
     # freq.sort()
     # return HttpResponse(m)
+
+def origin_zipf(request):
+    return render(request, 'search_engine/chart.html')
+

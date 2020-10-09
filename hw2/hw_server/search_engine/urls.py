@@ -13,4 +13,5 @@ urlpatterns = [
     path('upload_file', views.upload_file, name = 'upload_file'),
     path('zipf',views.zipf, name = 'zipf'),
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
+    path('origin_zipf',views.origin_zipf, name = 'origin_zipf'),
 ]
