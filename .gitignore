@@ -5,3 +5,7 @@ pubmed20n0001.xml
 __pycache__/
 
 .vscode/
+
+pubmed/
+
+db.sqlite3
