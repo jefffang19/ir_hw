@@ -319,5 +319,20 @@ def zipf(request):
     # return HttpResponse(m)
 
 def origin_zipf(request):
-    return render(request, 'search_engine/chart.html')
+    a = Article.objects.all()
+    m = {}
+    # calculate the freq of each word
+    for i in a:
+        for j in i.abstract.split(' '):
+            if j in m.keys():
+                m[j] += 1
+            else:
+                m[j] = 1
+
+    # sort the dict by value
+    m = {k : v for k, v in sorted(m.items(), key=lambda  item: item[1], reverse=True)}
+
+    # return JsonResponse({'words' : list(m.keys()), 'freq' : list(m.values())})
+
+    return render(request, 'search_engine/chart.html', {'words' : list(m.keys()), 'freq' : list(m.values())})
 
