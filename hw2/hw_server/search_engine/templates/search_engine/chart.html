@@ -1,7 +1,15 @@
 {% load static %}
+{% load search_extra %}
 
 <html lang="en">
 <head>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!------ Include the above in your HEAD tag ---------->
 
 	<title>Scatter Chart</title>
 	<script src={% static "js/chart.js" %}></script>
@@ -40,7 +48,7 @@
 		function generateOtherData() {
 			var data = [];
 			
-			for (var i = 0; i < other_freq.length ; i++){
+			for (var i = 0; i < 1000; i++){
 				data.push({
 					x: i+100,
 					y: other_freq[i]
@@ -103,6 +111,25 @@
 			window.myScatter.update();
 		});
 	</script>
-	{{ top_words }}
+
+	<table class="table">
+		<thead>
+			<tr>
+			<th scope="col">#</th>
+			<th scope="col">Word</th>
+			<th scope="col">Frequency</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in top_words %}
+			<tr>
+			<th scope="row">{{ forloop.counter }}</th>
+				<td>{{ i }}</td>
+				<td>{{ top_freq|get_element:forloop.counter0 }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
 </body>
 </html>
