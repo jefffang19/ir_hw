@@ -289,7 +289,15 @@ def import_pubmed(request):
 
 # hw 2 main template
 def zipf(request, opt=0):
-    a = StemFreq.objects.all()
+    a = 'temp'
+    title = 'temp'
+
+    if opt == 0:
+        a = OriginFreq.objects.all()
+        title = 'Covid-19 Origin Zipf Chart'
+    elif opt == 1:
+        a = StemFreq.objects.all()
+        title = 'Covid-19 Stem Zipf Chart'
 
     top100_words = []
     top100_freq = []
@@ -307,7 +315,7 @@ def zipf(request, opt=0):
         
         count += 1
 
-    return render(request, 'search_engine/chart.html', {'opt' : opt, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+    return render(request, 'search_engine/chart.html', {'title' : title, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
 # create origin word frequency table
 def create_origin_freq(request):
