@@ -10,5 +10,7 @@ class Word(models.Model):
     position = models.ManyToManyField(Article)
     pos_in_a_article = models.IntegerField()
 
-
+class StemFreq(models.Model):
+    word = models.CharField(max_length=200)
+    frequency = models.IntegerField()
     

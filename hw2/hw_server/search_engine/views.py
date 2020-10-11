@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Article, Word
+from .models import Article, Word, StemFreq
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from .forms import WordForm, UploadFileForm
@@ -357,6 +357,12 @@ def data_processor_pubmed(request):
                     word_freq[j[0]] += 1
                 else:
                     word_freq[j[0]] = 0
-        
+                    
+    # sort the dict by value
+    word_freq = {k : v for k, v in sorted(word_freq.items(), key=lambda  item: item[1], reverse=True)}
 
-    return JsonResponse(word_freq)
+    for j in word_freq.keys():
+        sf = StemFreq(word = j, frequency = word_freq[j])
+        sf.save() 
+
+    return HttpResponse('StemFreq created')
