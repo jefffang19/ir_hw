@@ -13,4 +13,8 @@ class Word(models.Model):
 class StemFreq(models.Model):
     word = models.CharField(max_length=200)
     frequency = models.IntegerField()
+
+class OriginFreq(models.Model):
+    word = models.CharField(max_length=200)
+    frequency = models.IntegerField()
     

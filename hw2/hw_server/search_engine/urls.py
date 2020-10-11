@@ -14,5 +14,6 @@ urlpatterns = [
     path('zipf',views.zipf, name = 'zipf'),
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
     path('origin_zipf',views.origin_zipf, name = 'origin_zipf'),
-    path('create_stemfreq', views.data_processor_pubmed, name = 'data_processor_pubmed'),
+    path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
+    path('create_originfreq', views.create_origin_freq, name = 'create_origin_freq'),
 ]

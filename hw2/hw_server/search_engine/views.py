@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Article, Word, StemFreq
+from .models import Article, Word, StemFreq, OriginFreq
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from .forms import WordForm, UploadFileForm
@@ -346,8 +346,30 @@ def origin_zipf(request):
 
     return render(request, 'search_engine/chart.html', {'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
+# create origin word frequency table
+def create_origin_freq(request):
+    a = Article.objects.all()
+    m = {}
+    # calculate the freq of each word
+    for i in a:
+        for j in i.abstract.split(' '):
+            if j in m.keys():
+                m[j] += 1
+            else:
+                m[j] = 1
 
-def data_processor_pubmed(request):
+    # sort the dict by value
+    m = {k : v for k, v in sorted(m.items(), key=lambda  item: item[1], reverse=True)}
+
+    # save to database
+    for j in m.keys():
+        of = OriginFreq(word = j, frequency = m[j])
+        of.save() 
+
+    return HttpResponse('OriginFreq created')
+
+# create stem word frequency table
+def create_stem_freq(request):
     a = Article.objects.all()
     word_freq = {}
     for i in a:
@@ -361,6 +383,7 @@ def data_processor_pubmed(request):
     # sort the dict by value
     word_freq = {k : v for k, v in sorted(word_freq.items(), key=lambda  item: item[1], reverse=True)}
 
+    #save to database
     for j in word_freq.keys():
         sf = StemFreq(word = j, frequency = word_freq[j])
         sf.save() 
