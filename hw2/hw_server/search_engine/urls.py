@@ -11,9 +11,9 @@ urlpatterns = [
     # path('search_page', TemplateView.as_view(template_name = 'search_engine/search_page.html') ),
     path('search_page', views.get_keywords, name = 'search_page'),
     path('upload_file', views.upload_file, name = 'upload_file'),
-    path('zipf',views.zipf, name = 'zipf'),
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
-    path('origin_zipf',views.origin_zipf, name = 'origin_zipf'),
+    path('zipf',views.zipf, name = 'zipf'), # main hw2 url
+    # db api urls
     path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
     path('create_originfreq', views.create_origin_freq, name = 'create_origin_freq'),
 ]

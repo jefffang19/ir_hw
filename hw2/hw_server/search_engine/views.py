@@ -286,63 +286,26 @@ def import_pubmed(request):
 
     return HttpResponse('import success{}'.format(count))
     # return JsonResponse({'problem csv' : no10})
-        
 
-
-
+# hw 2 main template
 def zipf(request):
-    a = Article.objects.all()
-    m = {}
+    a = StemFreq.objects.all()
+
+    top100_words = []
+    top100_freq = []
+    other_words = []
+    other_freq = []
+
+    count = 0
     for i in a:
-        for j in i.abstract.split(' '):
-            if j in m.keys():
-                m[j] += 1
-            else:
-                m[j] = 1
-
-    x = list(m.values())
-
-    x.sort(reverse=True)
-
-    import matplotlib.pyplot as plt
-    for i in range(len(x)):
-        plt.scatter(i,x[i])
-    
-    plt.savefig('tempfigure')
-
-    # return HttpResponse(x)
-
-    return JsonResponse(m)
-    
-    # freq = list(m.items())
-    # freq.sort()
-    # return HttpResponse(m)
-
-def origin_zipf(request):
-    a = Article.objects.all()
-    m = {}
-    # calculate the freq of each word
-    for i in a:
-        for j in i.abstract.split(' '):
-            if j in m.keys():
-                m[j] += 1
-            else:
-                m[j] = 1
-
-    # sort the dict by value
-    m = {k : v for k, v in sorted(m.items(), key=lambda  item: item[1], reverse=True)}
-
-
-    top100_words = list(m.keys())[:100]
-    # top100_words = {range(100)[i] : top100_words[i] for i in range(100)}
-    top100_freq = list(m.values())[:100]
-    # top100_freq = {range(100)[i] : top100_words[i] for i in range(100)}
-    other_words = list(m.keys())[100:]
-    # other_words = {range(len(other_words))[i] : other_words[i] for i in range(len(other_words))}
-    other_freq = list(m.values())[100:]
-    # other_freq = {range(len(other_freq))[i] : other_freq[i] for i in range(len(other_freq))}
-
-    # return JsonResponse({'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+        if count < 100:
+            top100_words.append(i.word)
+            top100_freq.append(i.frequency)
+        else:
+            other_words.append(i.word)
+            other_freq.append(i.frequency)
+        
+        count += 1
 
     return render(request, 'search_engine/chart.html', {'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
