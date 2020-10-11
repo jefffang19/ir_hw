@@ -346,3 +346,17 @@ def origin_zipf(request):
 
     return render(request, 'search_engine/chart.html', {'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
+
+def data_processor_pubmed(request):
+    a = Article.objects.all()
+    word_freq = {}
+    for i in a:
+        for j in string_to_tokens(i.abstract):
+            if j[0] != 'nan':
+                if j[0] in word_freq.keys():
+                    word_freq[j[0]] += 1
+                else:
+                    word_freq[j[0]] = 0
+        
+
+    return JsonResponse(word_freq)

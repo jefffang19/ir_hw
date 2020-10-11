@@ -153,6 +153,7 @@ def data_processor(input_path, mode = 'json', tag = 'p'):
 
         return new_many_articles
 
+
 # parse the user input form into tokens
 # return a list
 def string_to_tokens(in_str):
