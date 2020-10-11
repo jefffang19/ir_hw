@@ -33,8 +33,7 @@
 	<nav class="navbar navbar-expand navbar-dark bg-primary"> <a href="#menu-toggle" id="menu-toggle" class="navbar-brand"><span class="navbar-toggler-icon"></span></a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
 		<div class="collapse navbar-collapse" id="navbarsExample02">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
-				<li class="nav-item"> <a class="nav-link" href="#">Link</a> </li>
+				<li class="nav-item active"> <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a> </li>
 			</ul>
 			<form class="form-inline my-2 my-md-0"> </form>
 		</div>
@@ -43,14 +42,11 @@
 		<!-- Sidebar -->
 		<div id="sidebar-wrapper">
 			<ul class="sidebar-nav">
-				<li class="sidebar-brand"> <a href="#"> Start Bootstrap </a> </li>
-				<li> <a href="#">Dashboard</a> </li>
-				<li> <a href="#">Shortcuts</a> </li>
-				<li> <a href="#">Overview</a> </li>
-				<li> <a href="#">Events</a> </li>
-				<li> <a href="#">About</a> </li>
-				<li> <a href="#">Services</a> </li>
-				<li> <a href="#">Contact</a> </li>
+				<li class="sidebar-brand"> <a href="{% url 'zipf' opt=1%}"> Show All </a> </li>
+				<li> <a href="{% url 'zipf' opt=2%}">COVID19_origin</a> </li>
+				<li> <a href="{% url 'zipf' opt=3%}">COVID19_stem</a> </li>
+				<li> <a href="{% url 'zipf' opt=4%}">COVID19</a> </li>
+				<li> <a href="{% url 'zipf' opt=5%}">COVID19</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->

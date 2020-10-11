@@ -13,6 +13,7 @@ urlpatterns = [
     path('upload_file', views.upload_file, name = 'upload_file'),
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
     path('zipf',views.zipf, name = 'zipf'), # main hw2 url
+    path('zipf/<int:opt>',views.zipf, name = 'zipf'),
     # db api urls
     path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
     path('create_originfreq', views.create_origin_freq, name = 'create_origin_freq'),
