@@ -267,28 +267,9 @@ def del_everything(request):
 
     return
 
-def import_pubmed(request):
-    import pandas as pd
-    # read the 10000 files from csv
-    num_of_csv = 1000
-    count = 0
-    no10 = []
-    for i in range(1,num_of_csv+1):
-        dataframe = pd.read_csv('pubmed/{}.csv'.format(i))
-        count += dataframe.shape[0]
-        if dataframe.shape[0] != 10:
-            no10.append(i)
-        titles = list(dataframe['title'])
-        abstracts = list(dataframe['abstract'])
-        for j in range(len(titles)):
-            a = Article(title = titles[j], abstract = abstracts[j])
-            a.save()
-
-    return HttpResponse('import success{}'.format(count))
-    # return JsonResponse({'problem csv' : no10})
-
 # hw 2 main template
 def zipf(request, opt=0):
+    form = WordForm()
     a = 'temp'
     title = 'temp'
 
@@ -315,7 +296,99 @@ def zipf(request, opt=0):
         
         count += 1
 
-    return render(request, 'search_engine/chart.html', {'title' : title, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+    return render(request, 'search_engine/chart.html', {'title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+
+def zipf_search(request):
+    if request.method == 'POST':
+        form = WordForm()
+        w = Word.objects.filter(context = "covid19")
+
+        titles = {}
+        for i in w:
+            title = i.position.get().title
+            if title not in titles.keys():
+                titles[title] = 1
+            else:
+                titles[title] += 1
+
+        # sort the dict by value
+        titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+        titles_name = list(titles.keys())
+        titles_freq = list(titles.values())
+
+        # calculate zipf
+        a = StemFreq.objects.all()
+        title = 'Covid-19 Stem Zipf Chart'
+
+        top100_words = []
+        top100_freq = []
+        other_words = []
+        other_freq = []
+
+        count = 0
+        for i in a:
+            if count < 100:
+                top100_words.append(i.word)
+                top100_freq.append(i.frequency)
+            else:
+                other_words.append(i.word)
+                other_freq.append(i.frequency)
+            
+            count += 1
+        
+        return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+    else:
+        return HttpResponse('Wrong Method')
+
+def search_covid(request):
+    w = Word.objects.filter(context = "covid19")
+
+    titles = {}
+    for i in w:
+        title = i.position.get().title
+        if title not in titles.keys():
+            titles[title] = 1
+        else:
+            titles[title] += 1
+
+    # sort the dict by value
+    titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+    
+    return JsonResponse(titles)
+
+# an api to import pubmed xml
+def import_pubmed(request):
+    import pandas as pd
+    # read the 10000 files from csv
+    num_of_csv = 1000
+    count = 0
+    no10 = []
+    for i in range(1,num_of_csv+1):
+        dataframe = pd.read_csv('pubmed/{}.csv'.format(i))
+        count += dataframe.shape[0]
+        if dataframe.shape[0] != 10:
+            no10.append(i)
+        titles = list(dataframe['title'])
+        abstracts = list(dataframe['abstract'])
+        for j in range(len(titles)):
+            a = Article(title = titles[j], abstract = abstracts[j])
+            a.save()
+
+    return HttpResponse('import success{}'.format(count))
+    # return JsonResponse({'problem csv' : no10})
+
+# an api to create reverse index
+def create_revindex(request):
+    a = Article.objects.all()
+    word_freq = {}
+    for i in a:
+        for j in string_to_tokens(i.abstract):
+            if j[0] != 'nan':
+                w = Word(context = j[0], pos_in_a_article = j[1])
+                w.save()
+                w.position.add(i)
+    
+    return HttpResponse('Create Reverse index success')
 
 # create origin word frequency table
 def create_origin_freq(request):

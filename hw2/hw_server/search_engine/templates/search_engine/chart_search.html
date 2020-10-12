@@ -59,9 +59,9 @@
 				{% crispy form %}
 				{% comment %} <input type="submit" value="submit"> {% endcomment %}
 			</form>
-			{% comment %} end search bar {% endcomment %}
+			{% comment %} end search_bar {% endcomment %}
 			<div class="container-fluid">
-				<h1>{{ title }}</h1>
+				<h1>{{ char_title }}</h1>
 				{% comment %} chart below {% endcomment %}
 				<div style="width:75%">
 					<canvas id="canvas"></canvas>
@@ -172,8 +172,23 @@
 				</table>
 				{% comment %} table above {% endcomment %}
 			</div>
+			{% comment %} search result {% endcomment %}
+			<div class="list-group">
+				{% for i in titles_name %}
+					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						<small class="text-muted">{{ titles_freq|get_element:forloop.counter0 }} matched</small>
+						<h5 class="mb-1">{{ i|remove_period }}</h5>
+						</div>
+						{% comment %} <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+						<small class="text-muted">Donec id elit non mi porta.</small> {% endcomment %}
+					</a>
+				{% endfor %}
+			</div>
+	{% comment %} end search result {% endcomment %}
 		</div> <!-- /#page-content-wrapper -->
 	</div> <!-- /#wrapper -->
+
 	<!-- Bootstrap core JavaScript -->
 	<script src="js/jquery.min.js"></script>
 	<script src="js/bootstrap.bundle.min.js"></script> <!-- Menu Toggle Script -->

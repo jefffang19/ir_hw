@@ -11,10 +11,14 @@ urlpatterns = [
     # path('search_page', TemplateView.as_view(template_name = 'search_engine/search_page.html') ),
     path('search_page', views.get_keywords, name = 'search_page'),
     path('upload_file', views.upload_file, name = 'upload_file'),
-    path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
+    # hw 2
     path('zipf',views.zipf, name = 'zipf'), # main hw2 url
     path('zipf/<int:opt>',views.zipf, name = 'zipf'),
+    path('zipf_search', views.zipf_search, name = 'zipf_search'),
     # db api urls
+    path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
     path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
     path('create_originfreq', views.create_origin_freq, name = 'create_origin_freq'),
+    path('create_revindex', views.create_revindex, name = 'create_revindex'),
+    path('search_covid', views.search_covid, name = 'search_covid'),
 ]
