@@ -328,12 +328,31 @@ def zipf(request, opt=0):
         return render(request, 'search_engine/chart.html', {'title' : title, 'form' : form, 'top_words_ori' : top100_words_ori, 'top_words_stem' : top100_words_stem, 'freq_ori' : freq_ori, 'freq_stem' : freq_stem, 'top_words' : [], 'freq' : [] })
 
 def zipf_search(request):
+    # for spelling correction
+    from spellchecker import SpellChecker
+
+    spell = SpellChecker()
+
     if request.method == 'POST':
         form = WordForm(request.POST)
         # get search word
         if form.is_valid():
             # parse and clean (stemming..etc) the keywords
-            keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
+            origin_keyword = form.cleaned_data['keywords']
+            misspelled = spell.unknown([origin_keyword])
+            corrected_keyword = ''
+            search_title = ''
+            
+            if len(misspelled)!= 0:
+                for w in misspelled:
+                    corrected_keyword = spell.correction(w)
+                search_title = 'Do you mean \"{}\". Showing search results for {}'.format(corrected_keyword,corrected_keyword)
+            else:
+                corrected_keyword = origin_keyword
+                search_title = 'search results for {}'.format(origin_keyword)
+           
+
+            keywords_cleaned = string_to_tokens(corrected_keyword)
 
             titles = {} # get the target articles names
             articles_pk = [] # get the target articles' pk
@@ -394,7 +413,7 @@ def zipf_search(request):
             other_words_raw = list(articles_raw_words.keys())[100:]
             other_freq_raw = list(articles_raw_words.values())[100:]
             
-            return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq, 'top_words_raw' : top100_words_raw, 'top_freq_raw' : top100_freq_raw, 'other_words_raw' : other_words_raw, 'other_freq_raw' : other_freq_raw })
+            return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq, 'top_words_raw' : top100_words_raw, 'top_freq_raw' : top100_freq_raw, 'other_words_raw' : other_words_raw, 'other_freq_raw' : other_freq_raw })
 
         
         else:

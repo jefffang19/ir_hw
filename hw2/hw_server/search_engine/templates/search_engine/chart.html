@@ -205,7 +205,33 @@
 						<tr>
 						<th scope="row">{{ freq|get_element:forloop.counter0 }}</th>
 							<td>{{ i }}</td>
-							<td>{{ forloop.counter }}</td>
+							<td>{{ forloop.counter0 }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% comment %} table above {% endcomment %}
+				{% comment %} table below {% endcomment %}
+				<table class="table">
+					<thead>
+						<tr>
+						<th scope="col">Frequency after stemming</th>
+						<th scope="col">Stem Word</th>
+						<th scope="col">#</th>
+						<th scope="col">Origin Frequency</th>
+						<th scope="col">Origin Word</th>
+						<th scope="col">#</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for i in top_words_ori %}
+						<tr>
+						<th scope="row">{{ freq_stem|get_element:forloop.counter0 }}</th>
+							<td>{{ top_words_stem|get_element:forloop.counter0 }}</td>
+							<td>{{ forloop.counter0 }}</td>
+							<td>{{ freq_ori|get_element:forloop.counter0 }}</td>
+							<td>{{ i }}</td>
+							<td>{{ forloop.counter0 }}</td>
 						</tr>
 						{% endfor %}
 					</tbody>

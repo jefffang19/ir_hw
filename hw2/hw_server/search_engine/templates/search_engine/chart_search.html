@@ -230,10 +230,10 @@
 						<tr>
 						<th scope="row">{{ top_freq|get_element:forloop.counter0 }}</th>
 							<td>{{ top_words|get_element:forloop.counter0 }}</td>
-							<td>{{ forloop.counter }}</td>
+							<td>{{ forloop.counter0 }}</td>
 							<td>{{ top_freq_raw|get_element:forloop.counter0 }}</td>
 							<td>{{ i }}</td>
-							<td>{{ forloop.counter }}</td>
+							<td>{{ forloop.counter0 }}</td>
 						</tr>
 						{% endfor %}
 					</tbody>
@@ -241,6 +241,7 @@
 				{% comment %} table above {% endcomment %}
 			</div>
 			{% comment %} search result {% endcomment %}
+			<h5>{{search_title}}</h5>
 			<div class="list-group">
 				{% for i in titles_name %}
 					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
