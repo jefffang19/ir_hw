@@ -467,7 +467,26 @@ def zipf_search(request, subset = 0):
 
 def show_pk_article(request, pk, keyword):
     a = Article.objects.get(pk = pk)
-    return JsonResponse({'abs' : a.abstract, 'keyword' : keyword}) 
+    tokens = string_to_tokens(a.abstract)
+    keyword_stem = string_to_tokens(keyword)
+
+    pos = []
+    for w in tokens:
+        if keyword_stem[0][0] == w[0]:
+            pos.append(w[1])
+
+    _abstract = ""
+
+    # a bug happened because \n
+    for j in a.abstract:
+        if(j != '\n'):
+            _abstract += j
+        else:
+            _abstract += ' '
+            
+    render_dict = {'title':a.title, 'abstract' : _abstract.split(' '), 'keyword' : keyword, 'pos':pos}
+    
+    return render(request, 'search_engine/show_an_article.html', render_dict)
 
 def search_covid(request):
     w = Word.objects.filter(context = "covid19")
