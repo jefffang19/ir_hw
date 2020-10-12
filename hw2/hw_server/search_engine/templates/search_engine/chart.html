@@ -192,6 +192,7 @@
 				{% comment %} chart above {% endcomment %}
 
 				{% comment %} table below {% endcomment %}
+				{% if not freq|check_empty %}
 				<table class="table">
 					<thead>
 						<tr>
@@ -210,8 +211,10 @@
 						{% endfor %}
 					</tbody>
 				</table>
+				{% endif %}
 				{% comment %} table above {% endcomment %}
 				{% comment %} table below {% endcomment %}
+				{% if freq|check_empty %}
 				<table class="table">
 					<thead>
 						<tr>
@@ -236,6 +239,7 @@
 						{% endfor %}
 					</tbody>
 				</table>
+				{% endif %}
 				{% comment %} table above {% endcomment %}
 			</div>
 		</div> <!-- /#page-content-wrapper -->
