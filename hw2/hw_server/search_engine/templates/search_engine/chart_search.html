@@ -209,13 +209,12 @@
 				{% comment %} chart above {% endcomment %}
 
 				{% comment %} table below {% endcomment %}
-				<table class="table">
-					<thead>
+				<table class="table table-bordered table-hover">
+					<thead class="thead-dark">
 						<tr>
-						<th scope="col">Frequency after stemming</th>
-						<th scope="col">Stem Word</th>
-						<th scope="col">#</th>
-						<th scope="col">Origin Frequency</th>
+						<th scope="col">Origin Covid19 Set Word Ranking</th>
+						<th scope="col">Origin Covid19 Set Frequency</th>
+						<th scope="col">Frequency on Origin</th>
 						<th scope="col">Origin Word</th>
 						<th scope="col">#</th>
 						</tr>
@@ -223,10 +222,33 @@
 					<tbody>
 						{% for i in top_words_raw %}
 						<tr>
-						<th scope="row">{{ freq|get_element:forloop.counter0 }}</th>
-							<td>{{ top_words|get_element:forloop.counter0 }}</td>
-							<td>{{ forloop.counter0 }}</td>
+						<th scope="row">{{ origin_covid_set_rank|get_element:forloop.counter0}}</th>
+							<td>{{ origin_covid_set_freq|get_element:forloop.counter0 }}</td>
 							<td>{{ freq_raw|get_element:forloop.counter0 }}</td>
+							<td>{{ i }}</td>
+							<td>{{ forloop.counter0 }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% comment %} table above {% endcomment %}
+				{% comment %} table below {% endcomment %}
+				<table class="table table-bordered table-hover">
+					<thead class="thead-dark">
+						<tr>
+						<th scope="col">Origin Covid19 Set Word Ranking</th>
+						<th scope="col">Origin Covid19 Set Frequency</th>
+						<th scope="col">Frequency after stemming</th>
+						<th scope="col">Stem Word</th>
+						<th scope="col">#</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for i in top_words %}
+						<tr>
+						<th scope="row">{{ stem_covid_set_rank|get_element:forloop.counter0}}</th>
+							<td>{{ stem_covid_set_freq|get_element:forloop.counter0 }}</td>
+							<td>{{ freq|get_element:forloop.counter0 }}</td>
 							<td>{{ i }}</td>
 							<td>{{ forloop.counter0 }}</td>
 						</tr>

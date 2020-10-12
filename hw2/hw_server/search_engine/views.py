@@ -397,6 +397,7 @@ def zipf_search(request, subset = 0):
     # sort the dict by value
     titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
     articles_raw_words = {k : v for k, v in sorted(articles_raw_words.items(), key=lambda  item: item[1], reverse=True)}
+    
     titles_name = list(titles.keys())
     titles_freq = list(titles.values())
 
@@ -418,13 +419,33 @@ def zipf_search(request, subset = 0):
     # sf = StemFreq.objects.all()
     title = str(corrected_keyword)
 
+    # stemming words
     top100_words = list(words.keys())[:100]
     freq = list(words.values())
 
+    # calculate stemmed covid19 set word rank
+    stem_covid_set_freq = []
+    stem_covid_set_rank = []
+    stem_covid_set_first_pk = StemFreq.objects.filter()[0].pk
+    for i in top100_words:
+        a = StemFreq.objects.get(word=i)
+        stem_covid_set_freq.append(a.frequency)
+        stem_covid_set_rank.append(a.pk - stem_covid_set_first_pk)
+
+    # origin words
     top100_words_raw = list(articles_raw_words.keys())[:100]
     freq_raw = list(articles_raw_words.values())
+
+    # calculate original covid19 set word rank
+    origin_covid_set_freq = []
+    origin_covid_set_rank = []
+    origin_covid_set_first_pk = OriginFreq.objects.filter()[0].pk
+    for i in top100_words_raw:
+        a = OriginFreq.objects.get(word=i)
+        origin_covid_set_freq.append(a.frequency)
+        origin_covid_set_rank.append(a.pk - origin_covid_set_first_pk)
     
-    return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw })
+    return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw, 'stem_covid_set_freq':stem_covid_set_freq, 'stem_covid_set_rank':stem_covid_set_rank, 'origin_covid_set_freq':origin_covid_set_freq, 'origin_covid_set_rank':origin_covid_set_rank })
 
 
 
