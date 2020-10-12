@@ -326,13 +326,19 @@ def zipf(request, opt=0):
             count += 1
 
         return render(request, 'search_engine/chart.html', {'title' : title, 'form' : form, 'top_words_ori' : top100_words_ori, 'top_words_stem' : top100_words_stem, 'freq_ori' : freq_ori, 'freq_stem' : freq_stem, 'top_words' : [], 'freq' : [] })
+        
 
-def zipf_search(request):
+def zipf_search(request, subset = 0):
     # for spelling correction
     from spellchecker import SpellChecker
 
     spell = SpellChecker()
 
+    form = WordForm()
+    corrected_keyword = ''
+    search_title = ''
+
+    # user search
     if request.method == 'POST':
         form = WordForm(request.POST)
         # get search word
@@ -350,73 +356,77 @@ def zipf_search(request):
             else:
                 corrected_keyword = origin_keyword
                 search_title = 'search results for {}'.format(origin_keyword)
-           
 
-            keywords_cleaned = string_to_tokens(corrected_keyword)
+    # predefine subset
+    elif subset == 0:
+        corrected_keyword = 'mask'
+        search_title = 'search results for mask'
 
-            titles = {} # get the target articles names
-            articles_pk = [] # get the target articles' pk
-            articles_raw_words = {} # get the target articles' abstract raw words
+    elif subset == 1:
+        corrected_keyword = '2005'
+        search_title = 'search results for 2005'
 
-            for i in keywords_cleaned:
-                w = Word.objects.filter(context = i[0])
 
-                for j in w:
-                    mode = j.position.get()
-                    title = mode.title
-                    # append article pk
-                    if mode.pk not in articles_pk:
-                        articles_pk.append(mode.pk)
-                        # append raw abstract words
-                        for k in mode.abstract.split(' '):
-                            if k not in articles_raw_words.keys():
-                                articles_raw_words[k] = 1
-                            else:
-                                articles_raw_words[k] += 1
-                    # append article title
-                    if title not in titles.keys():
-                        titles[title] = 1
+    # query for the data subset
+    keywords_cleaned = string_to_tokens(corrected_keyword)
+    titles = {} # get the target articles names
+    articles_pk = [] # get the target articles' pk
+    articles_raw_words = {} # get the target articles' abstract raw words
+
+    for i in keywords_cleaned:
+        w = Word.objects.filter(context = i[0])
+
+        for j in w:
+            mode = j.position.get()
+            title = mode.title
+            # append article pk
+            if mode.pk not in articles_pk:
+                articles_pk.append(mode.pk)
+                # append raw abstract words
+                for k in mode.abstract.split(' '):
+                    if k not in articles_raw_words.keys():
+                        articles_raw_words[k] = 1
                     else:
-                        titles[title] += 1
+                        articles_raw_words[k] += 1
+            # append article title
+            if title not in titles.keys():
+                titles[title] = 1
+            else:
+                titles[title] += 1
 
-            # sort the dict by value
-            titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
-            articles_raw_words = {k : v for k, v in sorted(articles_raw_words.items(), key=lambda  item: item[1], reverse=True)}
-            titles_name = list(titles.keys())
-            titles_freq = list(titles.values())
+    # sort the dict by value
+    titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+    articles_raw_words = {k : v for k, v in sorted(articles_raw_words.items(), key=lambda  item: item[1], reverse=True)}
+    titles_name = list(titles.keys())
+    titles_freq = list(titles.values())
 
-            words = {}
-            # get the target articles' words
-            for i in articles_pk:
-                w = Word.objects.filter(position__id=i)
-                for j in w:
-                    if j.context not in words.keys():
-                        words[j.context] = 1
-                    else:
-                        words[j.context] += 1
-            
-            # sort the dict by value
-            words = {k : v for k, v in sorted(words.items(), key=lambda  item: item[1], reverse=True)}
+    words = {}
+    # get the target articles' words
+    for i in articles_pk:
+        w = Word.objects.filter(position__id=i)
+        for j in w:
+            if j.context not in words.keys():
+                words[j.context] = 1
+            else:
+                words[j.context] += 1
+    
+    # sort the dict by value
+    words = {k : v for k, v in sorted(words.items(), key=lambda  item: item[1], reverse=True)}
 
-            # calculate zipf
-            # of = OriginFreq.objects.filter(word == )
-            # sf = StemFreq.objects.all()
-            title = str(form.cleaned_data['keywords'])
+    # calculate zipf
+    # of = OriginFreq.objects.filter(word == )
+    # sf = StemFreq.objects.all()
+    title = str(corrected_keyword)
 
-            top100_words = list(words.keys())[:100]
-            freq = list(words.values())
+    top100_words = list(words.keys())[:100]
+    freq = list(words.values())
 
-            top100_words_raw = list(articles_raw_words.keys())[:100]
-            freq_raw = list(articles_raw_words.values())
-            
-            return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw })
+    top100_words_raw = list(articles_raw_words.keys())[:100]
+    freq_raw = list(articles_raw_words.values())
+    
+    return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw })
 
-        
-        else:
-            return HttpResponse('search failed')
 
-    else:
-        return HttpResponse('Wrong Method')
 
 def search_covid(request):
     w = Word.objects.filter(context = "covid19")

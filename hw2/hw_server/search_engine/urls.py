@@ -15,6 +15,7 @@ urlpatterns = [
     path('zipf',views.zipf, name = 'zipf'), # main hw2 url
     path('zipf/<int:opt>',views.zipf, name = 'zipf'),
     path('zipf_search', views.zipf_search, name = 'zipf_search'),
+    path('zipf_search/<int:subset>', views.zipf_search, name = 'zipf_search'),
     # db api urls
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
     path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
