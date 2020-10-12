@@ -300,43 +300,54 @@ def zipf(request, opt=0):
 
 def zipf_search(request):
     if request.method == 'POST':
-        form = WordForm()
-        w = Word.objects.filter(context = "covid19")
+        form = WordForm(request.POST)
+        # get search word
+        if form.is_valid():
+            # parse and clean (stemming..etc) the keywords
+            keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
 
-        titles = {}
-        for i in w:
-            title = i.position.get().title
-            if title not in titles.keys():
-                titles[title] = 1
-            else:
-                titles[title] += 1
+            titles = {}
+            for i in keywords_cleaned:
+                w = Word.objects.filter(context = i[0])
 
-        # sort the dict by value
-        titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
-        titles_name = list(titles.keys())
-        titles_freq = list(titles.values())
+                for i in w:
+                    title = i.position.get().title
+                    if title not in titles.keys():
+                        titles[title] = 1
+                    else:
+                        titles[title] += 1
 
-        # calculate zipf
-        a = StemFreq.objects.all()
-        title = 'Covid-19 Stem Zipf Chart'
+            # sort the dict by value
+            titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+            titles_name = list(titles.keys())
+            titles_freq = list(titles.values())
 
-        top100_words = []
-        top100_freq = []
-        other_words = []
-        other_freq = []
+            # calculate zipf
+            a = StemFreq.objects.all()
+            title = '{} Stem Zipf Chart'.format(form.cleaned_data['keywords'])
 
-        count = 0
-        for i in a:
-            if count < 100:
-                top100_words.append(i.word)
-                top100_freq.append(i.frequency)
-            else:
-                other_words.append(i.word)
-                other_freq.append(i.frequency)
+            top100_words = []
+            top100_freq = []
+            other_words = []
+            other_freq = []
+
+            count = 0
+            for i in a:
+                if count < 100:
+                    top100_words.append(i.word)
+                    top100_freq.append(i.frequency)
+                else:
+                    other_words.append(i.word)
+                    other_freq.append(i.frequency)
+                
+                count += 1
             
-            count += 1
+            return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+
         
-        return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+        else:
+            return HttpResponse('search failed')
+
     else:
         return HttpResponse('Wrong Method')
 
