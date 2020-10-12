@@ -46,7 +46,7 @@
 				<li class="sidebar-brand"> <a href="{% url 'zipf' opt=9%}"> Show All </a> </li>
 				<li> <a href="{% url 'zipf' opt=0%}">COVID19_origin</a> </li>
 				<li> <a href="{% url 'zipf' opt=1%}">COVID19_stem</a> </li>
-				<li> <a href="{% url 'zipf' opt=4%}">COVID19</a> </li>
+				<li> <a href="{% url 'zipf' opt=2%}">COVID19_Both</a> </li>
 				<li> <a href="{% url 'zipf' opt=5%}">COVID19</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
@@ -61,7 +61,7 @@
 			</form>
 			{% comment %} end search bar {% endcomment %}
 			<div class="container-fluid">
-				<h1>{{ title }}</h1>
+				<h1>Covid-19 {{ title }} Zipf Chart</h1>
 				{% comment %} chart below {% endcomment %}
 				<div style="width:75%">
 					<canvas id="canvas"></canvas>
@@ -69,44 +69,67 @@
 				<button id="randomizeData">Randomize Data</button>
 				<script>
 					var color = Chart.helpers.color;
-					var top_freq = {{ top_freq|escapejs}}
-					var other_freq = {{ other_freq|escapejs }}
+					var title = "{{title|escapejs}}";
+					var freq = {{ freq|escapejs}};
+					var freq_ori = {{ freq_ori|escapejs}};
+					var freq_stem = {{ freq_stem|escapejs}};
 
-					function generateData(par) {
-						var data = [];
-						
-						data.push({
-							x: par,
-							y: top_freq[par]
-						});
-						
-						return data;
-					}
-					
-					function generateOtherData() {
+					function generateData() {
 						var data = [];
 						
 						for (var i = 0; i < 1000; i++){
 							data.push({
-								x: i+100,
-								y: other_freq[i]
+								x: i,
+								y: freq[i]
 							});
 						}
 						return data;
+					}
+ 
+					function generateOriData() {
+						var data = [];
 						
+						
+						for (var i = 0; i < 1000; i++){
+							data.push({
+								x: i,
+								y: freq_ori[i]
+							});
+						}
+						return data;
+					}
+
+					function generateStemData() {
+						var data = [];
+						
+						
+						for (var i = 0; i < 1000; i++){
+							data.push({
+								x: i,
+								y: freq_stem[i]
+							});
+						}
+						return data;
 					}
 					
 					function getDataSet() {
 						var dataset = [];
-						for (var i = 0; i < 100 ; i++){
-							dataset.push({label: i,
-										backgroundColor: getRandomColor(),
-										data: generateData(i)})
-						}
 						
-						dataset.push({label: "other",
+						dataset.push({label: title,
 							backgroundColor: getRandomColor(),
-							data: generateOtherData() })
+							data: generateData() })
+						return dataset;
+					}
+
+					function getBothDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "original",
+							backgroundColor: getRandomColor(),
+							data: generateOriData() })
+						dataset.push({label: "stemming",
+							backgroundColor: getRandomColor(),
+							data: generateStemData() })
 						return dataset;
 					}
 					
@@ -124,17 +147,34 @@
 						datasets : getDataSet(),
 					};
 
+					var scatterChartDataBoth = {
+						datasets : getBothDataSet(),
+					}
+
 					window.onload = function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
-						window.myScatter = Chart.Scatter(ctx, {
-							data: scatterChartData,
-							options: {
-								title: {
-									display: true,
-									text: 'Chart.js Scatter Chart'
-								},
-							}
-						});
+						
+						if(title.localeCompare('Both') == 0){
+							window.myScatter = Chart.Scatter(ctx, {
+								data: scatterChartDataBoth,
+								options: {
+									title: {
+										display: true,
+										text: 'Scatter Chart'
+									},
+								}
+							});
+						} else {
+							window.myScatter = Chart.Scatter(ctx, {
+								data: scatterChartData,
+								options: {
+									title: {
+										display: true,
+										text: 'Scatter Chart'
+									},
+								}
+							});
+						}
 					};
 
 					document.getElementById('randomizeData').addEventListener('click', function() {
@@ -163,7 +203,7 @@
 					<tbody>
 						{% for i in top_words %}
 						<tr>
-						<th scope="row">{{ top_freq|get_element:forloop.counter0 }}</th>
+						<th scope="row">{{ freq|get_element:forloop.counter0 }}</th>
 							<td>{{ i }}</td>
 							<td>{{ forloop.counter }}</td>
 						</tr>
