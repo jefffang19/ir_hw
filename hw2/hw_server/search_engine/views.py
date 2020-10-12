@@ -4,6 +4,8 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from .forms import WordForm, UploadFileForm
 
+import json
+
 from search_engine.parsing_utils import data_processor, handle_uploaded_file, count_sent
 from search_engine.parsing_utils import string_to_tokens
 
@@ -396,10 +398,18 @@ def zipf_search(request, subset = 0):
 
     # sort the dict by value
     titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+
     articles_raw_words = {k : v for k, v in sorted(articles_raw_words.items(), key=lambda  item: item[1], reverse=True)}
     
     titles_name = list(titles.keys())
     titles_freq = list(titles.values())
+
+    # get sort article pk
+    articles_pk = []
+    for i in titles_name:
+        a = Article.objects.filter(title=i)[0]
+        articles_pk.append(a.pk)
+
 
     words = {}
     # get the target articles' words
@@ -444,10 +454,20 @@ def zipf_search(request, subset = 0):
         a = OriginFreq.objects.get(word=i)
         origin_covid_set_freq.append(a.frequency)
         origin_covid_set_rank.append(a.pk - origin_covid_set_first_pk)
+
+    return_dict = {'search_title':search_title, 'titles_name' : titles_name,
+                'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words,
+                'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw,
+                'stem_covid_set_freq':stem_covid_set_freq, 'stem_covid_set_rank':stem_covid_set_rank,
+                'origin_covid_set_freq':origin_covid_set_freq, 'origin_covid_set_rank':origin_covid_set_rank,
+                'article_pk':articles_pk }
     
-    return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw, 'stem_covid_set_freq':stem_covid_set_freq, 'stem_covid_set_rank':stem_covid_set_rank, 'origin_covid_set_freq':origin_covid_set_freq, 'origin_covid_set_rank':origin_covid_set_rank })
+    return render(request, 'search_engine/chart_search.html', return_dict)
 
 
+def show_pk_article(request, pk, keyword):
+    a = Article.objects.get(pk = pk)
+    return JsonResponse({'abs' : a.abstract, 'keyword' : keyword}) 
 
 def search_covid(request):
     w = Word.objects.filter(context = "covid19")

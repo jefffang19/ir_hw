@@ -261,13 +261,13 @@
 			<h5>{{search_title}}</h5>
 			<div class="list-group">
 				{% for i in titles_name %}
-					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+					<a href="{% url 'show_pk_article' pk=article_pk|get_element:forloop.counter0 keyword=chart_title %}" class="list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-between">
 						<small class="text-muted">{{ titles_freq|get_element:forloop.counter0 }} matched</small>
 						<h5 class="mb-1">{{ i|remove_period }}</h5>
 						</div>
-						{% comment %} <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small> {% endcomment %}
+						<p class="mb-1">{{ article_pk|get_element:forloop.counter0 }}</p>
+						{% comment %} <small class="text-muted">Donec id elit non mi porta.</small> {% endcomment %}
 					</a>
 				{% endfor %}
 			</div>
