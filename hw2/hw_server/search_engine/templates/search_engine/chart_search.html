@@ -68,7 +68,7 @@
 				<div style="width:75%">
 					<canvas id="canvas"></canvas>
 				</div>
-				<button id="show_all" class="btn btn-outline-primary">Show All</button>
+				{% comment %} <button id="show_all" class="btn btn-outline-primary">Show All</button> {% endcomment %}
 				<script>
 					var color = Chart.helpers.color;
 					var freq = {{ freq|escapejs}}
@@ -266,7 +266,6 @@
 						<small class="text-muted">{{ titles_freq|get_element:forloop.counter0 }} matched</small>
 						<h5 class="mb-1">{{ i|remove_period }}</h5>
 						</div>
-						<p class="mb-1">{{ article_pk|get_element:forloop.counter0 }}</p>
 						{% comment %} <small class="text-muted">Donec id elit non mi porta.</small> {% endcomment %}
 					</a>
 				{% endfor %}
