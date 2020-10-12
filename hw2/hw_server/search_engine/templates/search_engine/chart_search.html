@@ -69,44 +69,26 @@
 				<button id="show_all" class="btn btn-outline-primary">Show All</button>
 				<script>
 					var color = Chart.helpers.color;
-					var top_freq = {{ top_freq|escapejs}}
-					var other_freq = {{ other_freq|escapejs }}
-					var top_freq_raw = {{ top_freq_raw|escapejs}}
-					var other_freq_raw = {{ other_freq_raw|escapejs }}
+					var freq = {{ freq|escapejs}}
+					var freq_raw = {{ freq_raw|escapejs }}
 
 					{% comment %} generate Stem data {% endcomment %}
 					function getDataSet() {
 						var dataset = [];
-						for (var i = 0; i < 100 ; i++){
-							dataset.push({label: i,
-										backgroundColor: getRandomColor(),
-										data: generateData(i)})
-						}
-						
-						dataset.push({label: "other",
+
+						dataset.push({label: "Stemming",
 							backgroundColor: getRandomColor(),
-							data: generateOtherData() })
+							data: generateData() })
 						return dataset;
 					}
 
-					function generateData(par) {
-						var data = [];
-						
-						data.push({
-							x: par,
-							y: top_freq[par]
-						});
-						
-						return data;
-					}
-					
-					function generateOtherData() {
+					function generateData() {
 						var data = [];
 						
 						for (var i = 0; i < 1000; i++){
 							data.push({
-								x: i+100,
-								y: other_freq[i]
+								x: i,
+								y: freq[i]
 							});
 						}
 						return data;
@@ -116,36 +98,20 @@
 					{% comment %} generate origin data {% endcomment %}
 					function getOriginDataSet() {
 						var dataset = [];
-						for (var i = 0; i < 100 ; i++){
-							dataset.push({label: i,
-										backgroundColor: getRandomColor(),
-										data: generateDataOrigin(i)})
-						}
 						
-						dataset.push({label: "other",
+						dataset.push({label: "Origin",
 							backgroundColor: getRandomColor(),
-							data: generateOtherDataOrigin() })
+							data: generateDataOrigin() })
 						return dataset;
 					}
-
-					function generateDataOrigin(par) {
-						var data = [];
-						
-						data.push({
-							x: par,
-							y: top_freq_raw[par]
-						});
-						
-						return data;
-					}
 					
-					function generateOtherDataOrigin() {
+					function generateDataOrigin() {
 						var data = [];
 						
 						for (var i = 0; i < 1000; i++){
 							data.push({
-								x: i+100,
-								y: other_freq_raw[i]
+								x: i,
+								y: freq_raw[i]
 							});
 						}
 						return data;
@@ -228,10 +194,10 @@
 					<tbody>
 						{% for i in top_words_raw %}
 						<tr>
-						<th scope="row">{{ top_freq|get_element:forloop.counter0 }}</th>
+						<th scope="row">{{ freq|get_element:forloop.counter0 }}</th>
 							<td>{{ top_words|get_element:forloop.counter0 }}</td>
 							<td>{{ forloop.counter0 }}</td>
-							<td>{{ top_freq_raw|get_element:forloop.counter0 }}</td>
+							<td>{{ freq_raw|get_element:forloop.counter0 }}</td>
 							<td>{{ i }}</td>
 							<td>{{ forloop.counter0 }}</td>
 						</tr>

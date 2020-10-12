@@ -404,16 +404,12 @@ def zipf_search(request):
             title = str(form.cleaned_data['keywords'])
 
             top100_words = list(words.keys())[:100]
-            top100_freq = list(words.values())[:100]
-            other_words = list(words.keys())[100:]
-            other_freq = list(words.values())[100:]
+            freq = list(words.values())
 
             top100_words_raw = list(articles_raw_words.keys())[:100]
-            top100_freq_raw = list(articles_raw_words.values())[:100]
-            other_words_raw = list(articles_raw_words.keys())[100:]
-            other_freq_raw = list(articles_raw_words.values())[100:]
+            freq_raw = list(articles_raw_words.values())
             
-            return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq, 'top_words_raw' : top100_words_raw, 'top_freq_raw' : top100_freq_raw, 'other_words_raw' : other_words_raw, 'other_freq_raw' : other_freq_raw })
+            return render(request, 'search_engine/chart_search.html', {'search_title':search_title, 'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'freq' : freq, 'top_words_raw' : top100_words_raw, 'freq_raw' : freq_raw })
 
         
         else:
