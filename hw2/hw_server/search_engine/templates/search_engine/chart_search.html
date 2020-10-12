@@ -34,7 +34,7 @@
 	<nav class="navbar navbar-expand navbar-dark bg-primary"> <a href="#menu-toggle" id="menu-toggle" class="navbar-brand"><span class="navbar-toggler-icon"></span></a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
 		<div class="collapse navbar-collapse" id="navbarsExample02">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"> <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a> </li>
+				<li class="nav-item active"> <a class="nav-link" href="{% url 'zipf'%}">Home <span class="sr-only">(current)</span></a> </li>
 			</ul>
 			<form class="form-inline my-2 my-md-0"> </form>
 		</div>
@@ -43,11 +43,11 @@
 		<!-- Sidebar -->
 		<div id="sidebar-wrapper">
 			<ul class="sidebar-nav">
-				<li class="sidebar-brand"> <a href="{% url 'zipf' opt=9%}"> Show All </a> </li>
-				<li> <a href="{% url 'zipf' opt=0%}">COVID19_origin</a> </li>
-				<li> <a href="{% url 'zipf' opt=1%}">COVID19_stem</a> </li>
-				<li> <a href="{% url 'zipf' opt=4%}">COVID19</a> </li>
-				<li> <a href="{% url 'zipf' opt=5%}">COVID19</a> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="origin" class="btn btn-outline-secondary">Original</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="stemming" class="btn btn-outline-secondary">Stemming</button> </li>
+				<li> <a>_</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->
@@ -66,7 +66,7 @@
 				<div style="width:75%">
 					<canvas id="canvas"></canvas>
 				</div>
-				<button id="randomizeData">Randomize Data</button>
+				<button id="show_all" class="btn btn-outline-primary">Show All</button>
 				<script>
 					var color = Chart.helpers.color;
 					var top_freq = {{ top_freq|escapejs}}
@@ -177,20 +177,34 @@
 							options: {
 								title: {
 									display: true,
-									text: 'Chart.js Scatter Chart'
+									text: "Zipf Chart after stemming"
 								},
 							}
 						});
 					};
 
-					document.getElementById('randomizeData').addEventListener('click', function() {
+					document.getElementById('origin').addEventListener('click', function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
 						window.myScatter = Chart.Scatter(ctx, {
 							data: scatterChartDataOrigin,
 							options: {
 								title: {
 									display: true,
-									text: 'Chart.js Scatter Chart'
+									text: "Zipf Chart before stemming",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('stemming').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartData,
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart after stemming",
 								},
 							}
 						});
@@ -203,15 +217,21 @@
 				<table class="table">
 					<thead>
 						<tr>
-						<th scope="col">Frequency</th>
-						<th scope="col">Word</th>
+						<th scope="col">Frequency after stemming</th>
+						<th scope="col">Stem Word</th>
+						<th scope="col">#</th>
+						<th scope="col">Origin Frequency</th>
+						<th scope="col">Origin Word</th>
 						<th scope="col">#</th>
 						</tr>
 					</thead>
 					<tbody>
 						{% for i in top_words_raw %}
 						<tr>
-						<th scope="row">{{ top_freq_raw|get_element:forloop.counter0 }}</th>
+						<th scope="row">{{ top_freq|get_element:forloop.counter0 }}</th>
+							<td>{{ top_words|get_element:forloop.counter0 }}</td>
+							<td>{{ forloop.counter }}</td>
+							<td>{{ top_freq_raw|get_element:forloop.counter0 }}</td>
 							<td>{{ i }}</td>
 							<td>{{ forloop.counter }}</td>
 						</tr>
