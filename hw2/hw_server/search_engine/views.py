@@ -306,12 +306,19 @@ def zipf_search(request):
             # parse and clean (stemming..etc) the keywords
             keywords_cleaned = string_to_tokens(form.cleaned_data['keywords'])
 
-            titles = {}
+            titles = {} # get the target articles names
+            articles_pk = [] # get the target articles' pk
+
             for i in keywords_cleaned:
                 w = Word.objects.filter(context = i[0])
 
                 for i in w:
-                    title = i.position.get().title
+                    mode = i.position.get()
+                    title = mode.title
+                    # append article pk
+                    if mode.pk not in articles_pk:
+                        articles_pk.append(mode.pk)
+                    # append article title
                     if title not in titles.keys():
                         titles[title] = 1
                     else:
@@ -322,25 +329,28 @@ def zipf_search(request):
             titles_name = list(titles.keys())
             titles_freq = list(titles.values())
 
+            words = {}
+            # get the target articles' words
+            for i in articles_pk:
+                w = Word.objects.filter(position__id=i)
+                for j in w:
+                    if j.context not in words.keys():
+                        words[j.context] = 1
+                    else:
+                        words[j.context] += 1
+            
+            # sort the dict by value
+            words = {k : v for k, v in sorted(words.items(), key=lambda  item: item[1], reverse=True)}
+
             # calculate zipf
-            a = StemFreq.objects.all()
-            title = '{} Stem Zipf Chart'.format(form.cleaned_data['keywords'])
+            # of = OriginFreq.objects.filter(word == )
+            # sf = StemFreq.objects.all()
+            title = str(form.cleaned_data['keywords'])
 
-            top100_words = []
-            top100_freq = []
-            other_words = []
-            other_freq = []
-
-            count = 0
-            for i in a:
-                if count < 100:
-                    top100_words.append(i.word)
-                    top100_freq.append(i.frequency)
-                else:
-                    other_words.append(i.word)
-                    other_freq.append(i.frequency)
-                
-                count += 1
+            top100_words = list(words.keys())[:100]
+            top100_freq = list(words.values())[:100]
+            other_words = list(words.keys())[100:]
+            other_freq = list(words.values())[100:]
             
             return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
 
