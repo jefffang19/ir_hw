@@ -71,6 +71,23 @@
 					var color = Chart.helpers.color;
 					var top_freq = {{ top_freq|escapejs}}
 					var other_freq = {{ other_freq|escapejs }}
+					var top_freq_raw = {{ top_freq_raw|escapejs}}
+					var other_freq_raw = {{ other_freq_raw|escapejs }}
+
+					{% comment %} generate Stem data {% endcomment %}
+					function getDataSet() {
+						var dataset = [];
+						for (var i = 0; i < 100 ; i++){
+							dataset.push({label: i,
+										backgroundColor: getRandomColor(),
+										data: generateData(i)})
+						}
+						
+						dataset.push({label: "other",
+							backgroundColor: getRandomColor(),
+							data: generateOtherData() })
+						return dataset;
+					}
 
 					function generateData(par) {
 						var data = [];
@@ -96,18 +113,43 @@
 						
 					}
 					
-					function getDataSet() {
+					{% comment %} generate origin data {% endcomment %}
+					function getOriginDataSet() {
 						var dataset = [];
 						for (var i = 0; i < 100 ; i++){
 							dataset.push({label: i,
 										backgroundColor: getRandomColor(),
-										data: generateData(i)})
+										data: generateDataOrigin(i)})
 						}
 						
 						dataset.push({label: "other",
 							backgroundColor: getRandomColor(),
-							data: generateOtherData() })
+							data: generateOtherDataOrigin() })
 						return dataset;
+					}
+
+					function generateDataOrigin(par) {
+						var data = [];
+						
+						data.push({
+							x: par,
+							y: top_freq_raw[par]
+						});
+						
+						return data;
+					}
+					
+					function generateOtherDataOrigin() {
+						var data = [];
+						
+						for (var i = 0; i < 1000; i++){
+							data.push({
+								x: i+100,
+								y: other_freq_raw[i]
+							});
+						}
+						return data;
+						
 					}
 					
 					function getRandomColor() {
@@ -124,6 +166,10 @@
 						datasets : getDataSet(),
 					};
 
+					var scatterChartDataOrigin = {
+						datasets : getOriginDataSet(),
+					};
+
 					window.onload = function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
 						window.myScatter = Chart.Scatter(ctx, {
@@ -138,13 +184,15 @@
 					};
 
 					document.getElementById('randomizeData').addEventListener('click', function() {
-						scatterChartData.datasets.forEach(function(dataset) {
-							dataset.data = dataset.data.map(function() {
-								return {
-									x: randomScalingFactor(),
-									y: randomScalingFactor()
-								};
-							});
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartDataOrigin,
+							options: {
+								title: {
+									display: true,
+									text: 'Chart.js Scatter Chart'
+								},
+							}
 						});
 						window.myScatter.update();
 					});
@@ -161,9 +209,9 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for i in top_words %}
+						{% for i in top_words_raw %}
 						<tr>
-						<th scope="row">{{ top_freq|get_element:forloop.counter0 }}</th>
+						<th scope="row">{{ top_freq_raw|get_element:forloop.counter0 }}</th>
 							<td>{{ i }}</td>
 							<td>{{ forloop.counter }}</td>
 						</tr>

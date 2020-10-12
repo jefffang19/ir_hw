@@ -308,16 +308,23 @@ def zipf_search(request):
 
             titles = {} # get the target articles names
             articles_pk = [] # get the target articles' pk
+            articles_raw_words = {} # get the target articles' abstract raw words
 
             for i in keywords_cleaned:
                 w = Word.objects.filter(context = i[0])
 
-                for i in w:
-                    mode = i.position.get()
+                for j in w:
+                    mode = j.position.get()
                     title = mode.title
                     # append article pk
                     if mode.pk not in articles_pk:
                         articles_pk.append(mode.pk)
+                        # append raw abstract words
+                        for k in mode.abstract.split(' '):
+                            if k not in articles_raw_words.keys():
+                                articles_raw_words[k] = 1
+                            else:
+                                articles_raw_words[k] += 1
                     # append article title
                     if title not in titles.keys():
                         titles[title] = 1
@@ -326,6 +333,7 @@ def zipf_search(request):
 
             # sort the dict by value
             titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
+            articles_raw_words = {k : v for k, v in sorted(articles_raw_words.items(), key=lambda  item: item[1], reverse=True)}
             titles_name = list(titles.keys())
             titles_freq = list(titles.values())
 
@@ -351,8 +359,13 @@ def zipf_search(request):
             top100_freq = list(words.values())[:100]
             other_words = list(words.keys())[100:]
             other_freq = list(words.values())[100:]
+
+            top100_words_raw = list(articles_raw_words.keys())[:100]
+            top100_freq_raw = list(articles_raw_words.values())[:100]
+            other_words_raw = list(articles_raw_words.keys())[100:]
+            other_freq_raw = list(articles_raw_words.values())[100:]
             
-            return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq })
+            return render(request, 'search_engine/chart_search.html', {'titles_name' : titles_name, 'titles_freq': titles_freq, 'chart_title' : title, 'form' : form, 'top_words' : top100_words, 'top_freq' : top100_freq, 'other_words' : other_words, 'other_freq' : other_freq, 'top_words_raw' : top100_words_raw, 'top_freq_raw' : top100_freq_raw, 'other_words_raw' : other_words_raw, 'other_freq_raw' : other_freq_raw })
 
         
         else:
