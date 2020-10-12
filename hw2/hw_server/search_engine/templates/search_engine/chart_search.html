@@ -48,6 +48,8 @@
 				<li> <a>_</a> </li>
 				<li> <button type="button" id="stemming" class="btn btn-outline-secondary">Stemming</button> </li>
 				<li> <a>_</a> </li>
+				<li> <button type="button" id="both" class="btn btn-outline-secondary">Both</button> </li>
+				<li> <a>_</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->
@@ -77,7 +79,7 @@
 						var dataset = [];
 
 						dataset.push({label: "Stemming",
-							backgroundColor: getRandomColor(),
+							backgroundColor: window.chartColors.red,
 							data: generateData() })
 						return dataset;
 					}
@@ -100,7 +102,7 @@
 						var dataset = [];
 						
 						dataset.push({label: "Origin",
-							backgroundColor: getRandomColor(),
+							backgroundColor: window.chartColors.blue,
 							data: generateDataOrigin() })
 						return dataset;
 					}
@@ -117,16 +119,21 @@
 						return data;
 						
 					}
-					
-					function getRandomColor() {
-						var letters = '0123456789ABCDEF'.split('');
-						var color = '#';
-						for (var i = 0; i < 6; i++ ) {
-							color += letters[Math.floor(Math.random() * 16)];
-						}
-						return color;
+
+					{% comment %} generate Both data {% endcomment %}
+					function getBothDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "Origin",
+							backgroundColor: window.chartColors.blue,
+							data: generateDataOrigin() })
+
+						dataset.push({label: "Stemming",
+							backgroundColor: window.chartColors.red,
+							data: generateData() })
+
+						return dataset;
 					}
-					
 
 					var scatterChartData = {
 						datasets : getDataSet(),
@@ -134,6 +141,10 @@
 
 					var scatterChartDataOrigin = {
 						datasets : getOriginDataSet(),
+					};
+
+					var scatterChartDataBoth = {
+						datasets : getBothDataSet(),
 					};
 
 					window.onload = function() {
@@ -151,6 +162,7 @@
 
 					document.getElementById('origin').addEventListener('click', function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
 						window.myScatter = Chart.Scatter(ctx, {
 							data: scatterChartDataOrigin,
 							options: {
@@ -165,6 +177,7 @@
 
 					document.getElementById('stemming').addEventListener('click', function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
 						window.myScatter = Chart.Scatter(ctx, {
 							data: scatterChartData,
 							options: {
@@ -175,6 +188,22 @@
 							}
 						});
 						window.myScatter.update();
+					});
+
+					document.getElementById('both').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartDataBoth,
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart Both",
+								},
+							}
+						});
+						window.myScatter.update();
+						win
 					});
 				</script>
 				{% comment %} chart above {% endcomment %}
