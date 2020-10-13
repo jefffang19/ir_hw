@@ -53,6 +53,30 @@
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->
+
+		{% comment %} radio buttons {% endcomment %}
+		<br>
+		<div class="btn-group btn-group-toggle" data-toggle="buttons">
+			<div class="radio buttons">
+				<label class="btn btn-secondary active">
+					<input type="radio" name="options" id="option1" autocomplete="off" checked onclick="openClass('table_stem')"> Stemming Frequency Table
+				</label>
+				<label class="btn btn-secondary">
+					<input type="radio" name="options" id="option2" autocomplete="off" checked onclick="openClass('table_ori')"> Origin Frequency Table
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="radio" name="options" id="option3" autocomplete="off" checked onclick="openClass('canvas')"> Zipf Chart
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="radio" name="options" id="option4" autocomplete="off" checked onclick="openClass('search_result')"> Search Result
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="radio" name="options" id="option5" autocomplete="off" checked onclick="openClass('both')"> All
+				</label>
+			</div>
+		</div>
+		{% comment %} radio buttons end {% endcomment %}
+
 		{% comment %} Make sure to keep all page content within the #page-content-wrapper {% endcomment %}
 		<div id="page-content-wrapper">
 			{% comment %} search bar {% endcomment %}
@@ -63,10 +87,10 @@
 			</form>
 			{% comment %} end search_bar {% endcomment %}
 			<div class="container-fluid">
-				<h1>Covid-19 and "{{ chart_title }}" subset Zipf Chart</h1>
+				<h1 class="container" id="chart_title">Covid-19 and "{{ chart_title }}" subset Zipf Chart</h1>
 				{% comment %} chart below {% endcomment %}
 				<div style="width:75%">
-					<canvas id="canvas"></canvas>
+					<canvas id="canvas" class="container"></canvas>
 				</div>
 				{% comment %} <button id="show_all" class="btn btn-outline-primary">Show All</button> {% endcomment %}
 				<script>
@@ -205,11 +229,39 @@
 						window.myScatter.update();
 						win
 					});
+
+					{% comment %} this function listens radio buttons to switch tab {% endcomment %}
+					function openClass(className) {
+						var i, x;
+						// get class="container" in page
+						x = document.getElementsByClassName("container");
+						//for all x class="container"  => display:none (hide show)
+						for (i = 0; i < x.length; i++) {
+							x[i].style.display = "none";
+						}
+						if (className.localeCompare('both') == 0) {
+							document.getElementById("canvas").style.display = "block";
+							document.getElementById("table_ori").style.display = "table";
+							document.getElementById("table_stem").style.display = "table";
+							document.getElementById("chart_title").style.display = "block";
+						} 
+						//show only clicked content
+						else if (className.localeCompare('table_ori') == 0 || className.localeCompare('table_stem') == 0 ) {
+							document.getElementById(className).style.display = "table";
+						} else if (className.localeCompare('search_result') == 0) { 
+							document.getElementById(className).style.display = "block";
+							document.getElementById("search_title").style.display = "table";
+						}else {
+  							document.getElementById(className).style.display = "block";
+							document.getElementById("chart_title").style.display = "block";
+						}
+					}
 				</script>
 				{% comment %} chart above {% endcomment %}
+				<br>
 
 				{% comment %} table below {% endcomment %}
-				<table class="table table-bordered table-hover">
+				<table class="table table-bordered table-hover container" id="table_ori">
 					<thead class="thead-dark">
 						<tr>
 						<th scope="col">Origin Covid19 Set Word Ranking</th>
@@ -233,7 +285,7 @@
 				</table>
 				{% comment %} table above {% endcomment %}
 				{% comment %} table below {% endcomment %}
-				<table class="table table-bordered table-hover">
+				<table class="table table-bordered table-hover container" id="table_stem">
 					<thead class="thead-dark">
 						<tr>
 						<th scope="col">Origin Covid19 Set Word Ranking</th>
@@ -257,9 +309,10 @@
 				</table>
 				{% comment %} table above {% endcomment %}
 			</div>
+
 			{% comment %} search result {% endcomment %}
-			<h5>{{search_title}}</h5>
-			<div class="list-group">
+			<h3 class="container" id="search_title">{{search_title}}</h5>
+			<div class="list-group container" id="search_result">
 				{% for i in titles_name %}
 					<a href="{% url 'show_pk_article' pk=article_pk|get_element:forloop.counter0 keyword=chart_title %}" class="list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-between">
