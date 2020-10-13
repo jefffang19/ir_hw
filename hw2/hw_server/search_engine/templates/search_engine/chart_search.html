@@ -131,6 +131,20 @@
 						
 					}
 
+					function generateDataCmp(list) {
+						var data = [];
+						
+						for (var i = 0; i < 100; i++){
+							data.push({
+								x: i,
+								y: list[i]
+							});
+						}
+						
+						return data;
+						
+					}
+
 					function generateDataReg(par, list) {
 						var data = [];
 						
@@ -185,11 +199,11 @@
 						
 						dataset.push({label: "Subset Origin",
 							backgroundColor: window.chartColors.blue,
-							data: generateData(freq_raw) })
+							data: generateDataCmp(freq_raw) })
 
 						dataset.push({label: "Covid-19 Origin",
 							backgroundColor: window.chartColors.red,
-							data: generateData(covid_raw) })
+							data: generateDataCmp(covid_raw) })
 
 						return dataset;
 					}
@@ -200,11 +214,11 @@
 						
 						dataset.push({label: "Subset Stemming",
 							backgroundColor: window.chartColors.blue,
-							data: generateData(freq) })
+							data: generateDataCmp(freq) })
 
 						dataset.push({label: "Covid-19 Stemming",
 							backgroundColor: window.chartColors.red,
-							data: generateData(covid_stem) })
+							data: generateDataCmp(covid_stem) })
 
 						return dataset;
 					}
