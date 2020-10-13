@@ -54,6 +54,10 @@
 				<li> <a>_</a> </li>
 				<li> <button type="button" id="covidStem" class="btn btn-outline-secondary">Compare Covid-19 Stemming</button> </li>
 				<li> <a>_</a> </li>
+				<li> <button type="button" id="covidOriReg" class="btn btn-outline-secondary">Compare Rank Origin</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="covidStemReg" class="btn btn-outline-secondary">Compare Rank Stemming</button> </li>
+				<li> <a>_</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->
@@ -126,6 +130,29 @@
 						return data;
 						
 					}
+
+					function generateDataReg(par, list) {
+						var data = [];
+						
+						if (par == 0){
+							for (var i = 0; i < 100; i++){
+								data.push({
+									x: i,
+									y: i
+								});
+							}
+						} else {
+							for (var i = 0; i < 100; i++){
+								data.push({
+									x: i,
+									y: list[i]
+								});
+							}
+						}
+						
+						return data;
+						
+					}
 					
 					{% comment %} generate origin data {% endcomment %}
 					function getOriginDataSet() {
@@ -182,6 +209,36 @@
 						return dataset;
 					}
 
+					{% comment %} generate Regression for Covid Origin {% endcomment %}
+					function getCovidOriRegDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "Subset Origin Words Ranking",
+							backgroundColor: window.chartColors.blue,
+							data: generateDataReg(0, []) })
+
+						dataset.push({label: "Covid-19 Origin Words Ranking",
+							backgroundColor: window.chartColors.red,
+							data: generateDataReg(1, {{ origin_covid_set_rank|escapejs }}) })
+
+						return dataset;
+					}
+
+					{% comment %} generate Regression for Covid Stem {% endcomment %}
+					function getCovidStemRegDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "Subset Stemming Words Ranking",
+							backgroundColor: window.chartColors.blue,
+							data: generateDataReg(0, []) })
+
+						dataset.push({label: "Covid-19 Stemming Words Ranking",
+							backgroundColor: window.chartColors.red,
+							data: generateDataReg(1, {{ stem_covid_set_rank|escapejs }}) })
+
+						return dataset;
+					}
+
 					var scatterChartData = {
 						datasets : getDataSet(),
 					};
@@ -200,7 +257,15 @@
 
 					var scatterChartDataCoividStem = {
 						datasets : getCovidStemDataSet(),
-					}
+					};
+
+					var scatterChartRegCoividOri = {
+						datasets : getCovidOriRegDataSet(),
+					};
+
+					var scatterChartRegCoividStem = {
+						datasets : getCovidStemRegDataSet(),
+					};
 
 					window.onload = function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
@@ -286,6 +351,38 @@
 								title: {
 									display: true,
 									text: "Zipf Chart Compare with Covid-19 Stemming",
+								},
+							}
+						});
+						window.myScatter.update();
+						win
+					});
+
+					document.getElementById('covidOriReg').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartRegCoividOri,
+							options: {
+								title: {
+									display: true,
+									text: "Compare with Covid-19 Origin word ranking",
+								},
+							}
+						});
+						window.myScatter.update();
+						win
+					});
+
+					document.getElementById('covidStemReg').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartRegCoividStem,
+							options: {
+								title: {
+									display: true,
+									text: "Compare with Covid-19 Stemming word ranking",
 								},
 							}
 						});
