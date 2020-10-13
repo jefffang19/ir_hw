@@ -368,6 +368,10 @@ def zipf_search(request, subset = 0):
         corrected_keyword = '2005'
         search_title = 'search results for 2005'
 
+    elif subset == 2:
+        corrected_keyword = 'children'
+        search_title = 'search results for children'
+
 
     # query for the data subset
     keywords_cleaned = string_to_tokens(corrected_keyword)

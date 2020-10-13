@@ -50,6 +50,10 @@
 				<li> <a>_</a> </li>
 				<li> <button type="button" id="both" class="btn btn-outline-secondary">Both</button> </li>
 				<li> <a>_</a> </li>
+				<li> <button type="button" id="covidOri" class="btn btn-outline-secondary">Compare Covid-19 Origin</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="covidStem" class="btn btn-outline-secondary">Compare Covid-19 Stemming</button> </li>
+				<li> <a>_</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		<!-- Page Content -->
@@ -97,6 +101,8 @@
 					var color = Chart.helpers.color;
 					var freq = {{ freq|escapejs}}
 					var freq_raw = {{ freq_raw|escapejs }}
+					var covid_raw = {{ origin_covid_set_freq|escapejs }}
+					var covid_stem = {{ stem_covid_set_freq|escapejs }}
 
 					{% comment %} generate Stem data {% endcomment %}
 					function getDataSet() {
@@ -104,17 +110,17 @@
 
 						dataset.push({label: "Stemming",
 							backgroundColor: window.chartColors.red,
-							data: generateData() })
+							data: generateData(freq) })
 						return dataset;
 					}
 
-					function generateData() {
+					function generateData(list) {
 						var data = [];
 						
 						for (var i = 0; i < 1000; i++){
 							data.push({
 								x: i,
-								y: freq[i]
+								y: list[i]
 							});
 						}
 						return data;
@@ -127,21 +133,8 @@
 						
 						dataset.push({label: "Origin",
 							backgroundColor: window.chartColors.blue,
-							data: generateDataOrigin() })
+							data: generateData(freq_raw) })
 						return dataset;
-					}
-					
-					function generateDataOrigin() {
-						var data = [];
-						
-						for (var i = 0; i < 1000; i++){
-							data.push({
-								x: i,
-								y: freq_raw[i]
-							});
-						}
-						return data;
-						
 					}
 
 					{% comment %} generate Both data {% endcomment %}
@@ -150,11 +143,41 @@
 						
 						dataset.push({label: "Origin",
 							backgroundColor: window.chartColors.blue,
-							data: generateDataOrigin() })
+							data: generateData(freq_raw) })
 
 						dataset.push({label: "Stemming",
 							backgroundColor: window.chartColors.red,
-							data: generateData() })
+							data: generateData(freq) })
+
+						return dataset;
+					}
+
+					{% comment %} generate Both covid origin and Subset origin {% endcomment %}
+					function getCovidOriDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "Subset Origin",
+							backgroundColor: window.chartColors.blue,
+							data: generateData(freq_raw) })
+
+						dataset.push({label: "Covid-19 Origin",
+							backgroundColor: window.chartColors.red,
+							data: generateData(covid_raw) })
+
+						return dataset;
+					}
+
+					{% comment %} generate Both covid origin and Subset origin {% endcomment %}
+					function getCovidStemDataSet() {
+						var dataset = [];
+						
+						dataset.push({label: "Subset Stemming",
+							backgroundColor: window.chartColors.blue,
+							data: generateData(freq) })
+
+						dataset.push({label: "Covid-19 Stemming",
+							backgroundColor: window.chartColors.red,
+							data: generateData(covid_stem) })
 
 						return dataset;
 					}
@@ -170,6 +193,14 @@
 					var scatterChartDataBoth = {
 						datasets : getBothDataSet(),
 					};
+
+					var scatterChartDataCovidOri = {
+						datasets : getCovidOriDataSet(),
+					};
+
+					var scatterChartDataCoividStem = {
+						datasets : getCovidStemDataSet(),
+					}
 
 					window.onload = function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
@@ -223,6 +254,38 @@
 								title: {
 									display: true,
 									text: "Zipf Chart Both",
+								},
+							}
+						});
+						window.myScatter.update();
+						win
+					});
+
+					document.getElementById('covidOri').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartDataCovidOri,
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart Compare with Covid-19 Origin",
+								},
+							}
+						});
+						window.myScatter.update();
+						win
+					});
+
+					document.getElementById('covidStem').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: scatterChartDataCoividStem,
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart Compare with Covid-19 Stemming",
 								},
 							}
 						});
