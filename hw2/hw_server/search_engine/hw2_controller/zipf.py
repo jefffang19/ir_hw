@@ -1,6 +1,6 @@
 from ..forms import WordForm
 from django.shortcuts import render
-from ..models import Article, Word, StemFreq, OriginFreq
+from ..models import StemFreq, OriginFreq
 
 # hw 2 main template
 def zipf(request, opt=0):

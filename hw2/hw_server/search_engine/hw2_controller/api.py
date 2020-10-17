@@ -1,12 +1,5 @@
-from django.shortcuts import render
 from ..models import Article, Word, StemFreq, OriginFreq
 from django.http import HttpResponse, JsonResponse
-from django.template import loader
-from ..forms import WordForm, UploadFileForm
-
-import json
-
-from search_engine.parsing_utils import data_processor, handle_uploaded_file, count_sent
 from search_engine.parsing_utils import string_to_tokens
 
 def search_covid(request):
@@ -22,7 +15,7 @@ def search_covid(request):
 
     # sort the dict by value
     titles = {k : v for k, v in sorted(titles.items(), key=lambda  item: item[1], reverse=True)}
-    
+
     return JsonResponse(titles)
 
 # an api to import pubmed xml
@@ -56,7 +49,7 @@ def create_revindex(request):
                 w = Word(context = j[0], pos_in_a_article = j[1])
                 w.save()
                 w.position.add(i)
-    
+
     return HttpResponse('Create Reverse index success')
 
 # create origin word frequency table
@@ -77,7 +70,7 @@ def create_origin_freq(request):
     # save to database
     for j in m.keys():
         of = OriginFreq(word = j, frequency = m[j])
-        of.save() 
+        of.save()
 
     return HttpResponse('OriginFreq created')
 
@@ -92,13 +85,13 @@ def create_stem_freq(request):
                     word_freq[j[0]] += 1
                 else:
                     word_freq[j[0]] = 0
-                    
+
     # sort the dict by value
     word_freq = {k : v for k, v in sorted(word_freq.items(), key=lambda  item: item[1], reverse=True)}
 
     #save to database
     for j in word_freq.keys():
         sf = StemFreq(word = j, frequency = word_freq[j])
-        sf.save() 
+        sf.save()
 
     return HttpResponse('StemFreq created')

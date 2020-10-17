@@ -1,10 +1,9 @@
 from django.shortcuts import render
-from ..models import Article, Word, StemFreq, OriginFreq
-from django.http import HttpResponse, JsonResponse
+from ..models import Article, Word
+from django.http import HttpResponse
 from django.template import loader
 from ..forms import WordForm, UploadFileForm
 
-import json
 
 from search_engine.parsing_utils import data_processor, handle_uploaded_file, count_sent
 from search_engine.parsing_utils import string_to_tokens

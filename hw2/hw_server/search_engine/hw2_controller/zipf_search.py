@@ -1,12 +1,6 @@
 from django.shortcuts import render
 from ..models import Article, Word, StemFreq, OriginFreq
-from django.http import HttpResponse, JsonResponse
-from django.template import loader
-from ..forms import WordForm, UploadFileForm
-
-import json
-
-from search_engine.parsing_utils import data_processor, handle_uploaded_file, count_sent
+from ..forms import WordForm
 from search_engine.parsing_utils import string_to_tokens
 
 def zipf_search(request, subset = 0):
