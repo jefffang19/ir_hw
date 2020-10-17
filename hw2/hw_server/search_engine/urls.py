@@ -17,6 +17,7 @@ urlpatterns = [
     path('zipf_search', views.zipf_search, name = 'zipf_search'),
     path('zipf_search/<int:subset>', views.zipf_search, name = 'zipf_search'),
     path('show_pk_article/<int:pk>/<slug:keyword>', views.show_pk_article, name ='show_pk_article'),
+    path('zipf_ct', views.zipf_ct, name = 'zipf_ct'),
     # db api urls
     path('import_pubmed', views.import_pubmed, name = 'import_pubmed'),
     path('create_stemfreq', views.create_stem_freq, name = 'create_stem_freq'),
