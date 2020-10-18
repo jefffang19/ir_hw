@@ -6,7 +6,9 @@ from search_engine.parsing_utils import string_to_tokens
 
 
 def zipf_ct(request):
-    form = WordForm()
+    # form = WordForm()
+
+    keyword = 'ct'
 
     corrected_keywords = ['mask', 'children', '2003', '2019', 'pneumothorax', 'pneumonia', 'image']
 
@@ -42,9 +44,17 @@ def zipf_ct(request):
         _words = list(words.keys())
         _freq = list(words.values())
 
+        keyword_rank = 0
+
+        # calculate keyword ranking in each subset
+        for i in range(len(_words)):
+            if _words[i] == keyword:
+                keyword_rank = i
+
         return_dict['{}_words'.format(ck)] = _words
         return_dict['{}_freq'.format(ck)] = _freq
         return_dict['{}_subset_article_num'.format(ck)] = len(articles_pk)
+        return_dict['{}_rank'.format(ck)] = keyword_rank
 
     # return JsonResponse(return_dict)
 

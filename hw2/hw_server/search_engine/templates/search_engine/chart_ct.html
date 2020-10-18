@@ -43,12 +43,21 @@
 		<!-- Sidebar -->
 		<div id="sidebar-wrapper">
 			<ul class="sidebar-nav">
-				<li class="sidebar-brand"> <a href="{% url 'zipf' opt=9%}"> Show All </a> </li>
-				<li> <a href="{% url 'zipf' opt=0%}">COVID19_origin</a> </li>
-				<li> <a href="{% url 'zipf' opt=1%}">COVID19_stem</a> </li>
-				<li> <a href="{% url 'zipf' opt=2%}">COVID19_Both</a> </li>
-				<li> <a href="{% url 'zipf_search' subset=0%}">COVID19_mask</a> </li>
-				<li> <a href="{% url 'zipf_search' subset=1%}">COVID19_2005</a> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word0" class="btn btn-outline-secondary">Mask</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word1" class="btn btn-outline-secondary">Children</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word2" class="btn btn-outline-secondary">2003</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word3" class="btn btn-outline-secondary">2019</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word4" class="btn btn-outline-secondary">pneumothorax</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word5" class="btn btn-outline-secondary">pneumonia</button> </li>
+				<li> <a>_</a> </li>
+				<li> <button type="button" id="word6" class="btn btn-outline-secondary">image</button> </li>
+				<li> <a>_</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		{% comment %} radio buttons {% endcomment %}
@@ -87,17 +96,36 @@
 					var freq_pneumothorax = {{ pneumothorax_freq|escapejs}};
 					var freq_pneumonia = {{ pneumonia_freq|escapejs}};
 					var freq_image = {{ image_freq|escapejs}};
+					var rank_mask = {{ mask_rank|escapejs }};
+					var rank_children = {{ children_rank|escapejs}};
+					var rank_2003 = {{ 2003_rank|escapejs}};
+					var rank_2019 = {{ 2019_rank|escapejs}};
+					var rank_pneumothorax = {{ pneumothorax_rank|escapejs}};
+					var rank_pneumonia = {{ pneumonia_rank|escapejs}};
+					var rank_image = {{ image_rank|escapejs}};
 
 
-					function generateData(list) {
+					function generateData(list, r, thresh) {
 						var data = [];
 						
-						for (var i = 0; i < 1000; i++){
-							data.push({
-								x: i,
-								y: list[i]
-							});
+						for (var i = 0; i < 10000; i++){
+						    if (Math.abs(i-r) > thresh){
+						        data.push({
+                                    x: i,
+                                    y: list[i]
+                                });
+                            }
 						}
+						return data;
+					}
+
+					function generatePoint(list, r) {
+						var data = [];
+
+                        data.push({
+                            x: r,
+                            y: list[r]
+                        });
 						return data;
 					}
 
@@ -110,49 +138,91 @@
 						return color;
 					}
 					
-					function getDataSet() {
+					function getDataSet(par) {
 						var dataset = [];
-						
-						dataset.push({label: "mask",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_mask) })
 
-                        dataset.push({label: "children",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_children) })
+						switch (par){
+						    case 0:
+                                dataset.push({label: "mask",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_mask, rank_mask, 50) });
 
-                        dataset.push({label: "2003",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_2003) })
+                                dataset.push({label: "mask_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_mask, rank_mask) });
+                                break;
+                            case 1:
+                                dataset.push({label: "children",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_children, rank_children, 20) });
+                                dataset.push({label: "children_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_children, rank_children) })
+                                break;
 
-                        dataset.push({label: "2019",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_2019) })
+                            case 2:
+                                dataset.push({label: "2003",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_2003, rank_2003, 50) })
+                                dataset.push({label: "2003_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_2003, rank_2003) })
+                                break;
 
-                        dataset.push({label: "pneumothorax",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_pneumothorax) })
+                            case 3:
+                                dataset.push({label: "2019",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_2019, rank_2019, 50) })
+                                dataset.push({label: "2019_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_2019, rank_2019) })
+                                break;
 
-                        dataset.push({label: "pneumonia",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_pneumonia) })
+                            case 4:
+                                dataset.push({label: "pneumothorax",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_pneumothorax, rank_pneumothorax, 1) })
+                                dataset.push({label: "pneumothorax_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_pneumothorax, rank_pneumothorax) })
+                                break;
 
-                        dataset.push({label: "image",
-							backgroundColor: getRandomColor(),
-							data: generateData(freq_image) })
+                            case 5:
+                                dataset.push({label: "pneumonia",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_pneumonia, rank_pneumonia, 7) })
+                                dataset.push({label: "pneumonia_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_pneumonia, rank_pneumonia) })
+                                break;
+
+                            case 6:
+                                dataset.push({label: "image",
+                                    backgroundColor: window.chartColors.grey,
+                                    data: generateData(freq_image, rank_image, 1) })
+                                dataset.push({label: "image_ct",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generatePoint(freq_image, rank_image) })
+                                break;
+                        }
 
 						return dataset;
 					}
 
-					var scatterChartData = {
-						datasets : getDataSet(),
-					};
+                    function createChartData(par){
+					    var scatterChartData = {
+                            datasets : getDataSet(par),
+                        };
+
+					    return scatterChartData;
+                    }
+
 
 					window.onload = function() {
 						var ctx = document.getElementById('canvas').getContext('2d');
 
                         window.myScatter = Chart.Scatter(ctx, {
-                            data: scatterChartData,
+                            data: createChartData(0),
                             options: {
                                 title: {
                                     display: true,
@@ -161,6 +231,111 @@
                             }
                         });
 					};
+
+					document.getElementById('word0').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(0),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word1').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(1),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word2').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(2),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word3').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(3),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word4').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(4),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word5').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(5),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
+
+					document.getElementById('word6').addEventListener('click', function() {
+						var ctx = document.getElementById('canvas').getContext('2d');
+						window.myScatter.destroy();
+						window.myScatter = Chart.Scatter(ctx, {
+							data: createChartData(6),
+							options: {
+								title: {
+									display: true,
+									text: "Zipf Chart",
+								},
+							}
+						});
+						window.myScatter.update();
+					});
 
 					{% comment %} this function listens radio buttons to switch tab {% endcomment %}
 					{#function openClass(className) {#}
