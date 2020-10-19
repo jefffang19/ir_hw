@@ -14,7 +14,7 @@ def check_empty(value):
     return len(value) == 0
 
 def cal_percentage(value, div):
-    return value/div
+    return round(value/div * 100, 2)
 
 
 register.filter('get_element', get_element)
