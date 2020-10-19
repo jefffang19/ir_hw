@@ -10,7 +10,7 @@ def zipf_ct(request):
 
     keyword = 'ct'
 
-    corrected_keywords = ['mask', 'children', '2003', '2019', 'pneumothorax', 'pneumonia', 'image']
+    corrected_keywords = ['mask', 'children', '2003', '2019', 'pneumothorax', 'pneumonia', 'image', 'adult', 'bat', 'immune', 'wuhan', 'vaccin']
 
     return_dict = {}
 
@@ -53,7 +53,7 @@ def zipf_ct(request):
 
         return_dict['{}_words'.format(ck)] = _words
         return_dict['{}_freq'.format(ck)] = _freq
-        return_dict['{}_subset_article_num'.format(ck)] = len(articles_pk)
+        return_dict['{}_subset_article_num'.format(ck)] = len(_words)
         return_dict['{}_rank'.format(ck)] = keyword_rank
 
     # return JsonResponse(return_dict)

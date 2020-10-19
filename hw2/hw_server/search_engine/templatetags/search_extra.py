@@ -13,7 +13,11 @@ def remove_period(value):
 def check_empty(value):
     return len(value) == 0
 
+def cal_percentage(value, div):
+    return value/div
+
 
 register.filter('get_element', get_element)
 register.filter('remove_period', remove_period)
 register.filter('check_empty', check_empty)
+register.filter('cal_percentage', cal_percentage)
