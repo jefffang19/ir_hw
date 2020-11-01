@@ -15,7 +15,37 @@ def use_model(request):
     model = Word2Vec.load("word2vec_sg.model")
     most_similar(model, ['china', 'mask', 'ct'], 100).to_csv("word2vec.csv")
 
-    return HttpResponse()
+    # find top 100 high freq word in covid19 set
+    sf = StemFreq.objects.all()[:100]
+    top_words = []
+    for i, w in enumerate(sf):
+        # if i >= 100:
+        #     break
+        top_words.append(w.word)
+
+    # get all label and (x,y)
+    tsne = Tsne.objects.filter(model_num = 0)
+
+    x_vals = []
+    y_vals = []
+    labels = []
+    for i in tsne:
+        x_vals.append(i.x_val)
+        y_vals.append(i.y_val)
+        labels.append(i.label)
+
+    # plot_with_matplotlib(x_vals, y_vals, labels, top_words)
+
+    return_dict = {
+        'high_x' : x_vals[:1000],
+        'high_y' : y_vals[:1000],
+        'mid_x' : x_vals[1000:10000],
+        'mid_y' : y_vals[1000:10000],
+        'low_x' : x_vals[10000:],
+        'low_y' : y_vals[10000:],
+    }
+
+    return render(request, 'search_engine/w2v_tsne.html', return_dict)
 
 # tsne reduce dim cost a lot of time
 def tsne(request):
@@ -33,15 +63,6 @@ def tsne(request):
 
     for i in range(len(labels)):
         Tsne.objects.create(model_num = model_num, x_val = x_vals[i], y_val = y_vals[i], label = labels[i], dataset_name = "Covid-19")
-
-    # find top 100 high freq word in covid19 set
-    # sf = StemFreq.objects.all()
-    # top_words = []
-    # for i, w in enumerate(sf):
-    #     if i >= 100:
-    #         break
-    #     top_words.append(w.word)
-    # plot_with_matplotlib(x_vals, y_vals, labels, top_words)
 
     return HttpResponse("tsne data create success")
 
