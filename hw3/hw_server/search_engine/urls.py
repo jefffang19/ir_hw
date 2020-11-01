@@ -24,4 +24,6 @@ urlpatterns = [
     path('create_originfreq', views.create_origin_freq, name = 'create_origin_freq'),
     path('create_revindex', views.create_revindex, name = 'create_revindex'),
     path('search_covid', views.search_covid, name = 'search_covid'),
+    # hw3
+    path('create_model', views.create_model, name = 'create_model'),
 ]

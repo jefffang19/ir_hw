@@ -10,3 +10,5 @@ __pycache__/
 pubmed/
 
 db.sqlite3
+/hw3/hw_server/word2vec.csv
+/hw3/hw_server/word2vec_sg.model
