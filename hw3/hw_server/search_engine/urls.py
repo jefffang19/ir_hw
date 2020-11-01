@@ -26,4 +26,6 @@ urlpatterns = [
     path('search_covid', views.search_covid, name = 'search_covid'),
     # hw3
     path('create_model', views.create_model, name = 'create_model'),
+    path('use_model', views.use_model, name = 'use_model'),
+    path('tsne', views.tsne, name = 'tsne'),
 ]

@@ -17,4 +17,10 @@ class StemFreq(models.Model):
 class OriginFreq(models.Model):
     word = models.CharField(max_length=200)
     frequency = models.IntegerField()
-    
+
+class Tsne(models.Model):
+    model_num = models.IntegerField()
+    dataset_name = models.CharField(max_length=200)
+    x_val = models.FloatField()
+    y_val = models.FloatField()
+    label = models.CharField(max_length=200)
