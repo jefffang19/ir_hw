@@ -18,7 +18,7 @@ def use_model(request):
     # print(model.wv.similarity('covid19', 'covid19'))
 
     # get all label and (x,y)
-    x_vals, y_vals, labels = get_tsne_data()
+    x_vals, y_vals, labels = tsne(50)
 
     # create zipf data
     words, freqs = create_zipf()
@@ -47,30 +47,15 @@ def use_model(request):
     return render(request, 'search_engine/w2v_tsne.html', return_dict)
 
 
-# tsne reduce dim cost a lot of time
-@csrf_exempt
-def tsne(request):
-    if request.method == 'POST':
-        from gensim.models.word2vec import Word2Vec
+def tsne(perplexity):
+    from gensim.models.word2vec import Word2Vec
 
-        model = Word2Vec.load("word2vec_sg.model")
+    model = Word2Vec.load("word2vec_sg.model")
 
-        perplexity = float(request.POST['perplexity'])
-        x_vals, y_vals, labels = reduce_dimensions(model, perplexity)
+    x_vals, y_vals, labels = reduce_dimensions(model, perplexity)
 
-        # count model #
-        model_num = 0
-        try:
-            ts = Tsne.objects.latest('id')
-            model_num = ts.model_num + 1
-        except:
-            model_num = 0
+    return x_vals, y_vals, labels
 
-        for i in range(len(labels)):
-            Tsne.objects.create(model_num=model_num, x_val=x_vals[i], y_val=y_vals[i], label=labels[i],
-                                dataset_name="Covid-19", perplexity=perplexity)
-
-        return HttpResponse("tsne data create success")
 
 def most_similar(w2v_model, words, topn=10):
     similar_df = pd.DataFrame()
