@@ -12,12 +12,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 def use_model(request, set=0, perplexity=30):
     from gensim.models.word2vec import Word2Vec
+    from .utils import stemmed
 
     model = Word2Vec.load("word2vec_sg.model")
+    keyword = "covid19"
     if set == 1:
         model = Word2Vec.load("word2vec_image_sg.model")
+        keyword = "image"
     elif set == 2:
         model = Word2Vec.load("word2vec_mask_sg.model")
+        keyword = "mask"
     # most_similar(model, ['china', 'mask', 'covid19'], 100).to_csv("word2vec.csv")
     # print(model.wv.similarity('covid19', 'covid19'))
 
@@ -40,6 +44,8 @@ def use_model(request, set=0, perplexity=30):
         'mid_freq': [HIGH_FREQ, MID_FREQ],
         'low_freq': [MID_FREQ, len(x_vals)],
         'freqs': freqs,
+        'cos_sim': str(model.wv.similarity('ct', stemmed(keyword))),
+        'subset_name': keyword,
     }
 
     return_dict = {**return_dict, **d}
