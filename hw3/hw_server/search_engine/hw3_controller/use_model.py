@@ -61,7 +61,6 @@ def use_model(request):
             low_x.append(x_vals[cnt])
             low_y.append(y_vals[cnt])
 
-
     return_dict = {
         'high_freq': [0,HIGH_FREQ],
         'mid_freq': [HIGH_FREQ, MID_FREQ],

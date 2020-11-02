@@ -95,6 +95,19 @@
 						return data;
 					}
 
+					function generateZipfData(y, start_pos) {
+						var data = [];
+
+						for (var i = 0; i < y.length; i++){
+							data.push({
+								x: i + start_pos,
+								y: y[i]
+							});
+
+						}
+						return data;
+					}
+
 					function getRandomColor() {
 						var letters = '0123456789ABCDEF'.split('');
 						var color = '#';
@@ -108,6 +121,7 @@
 						var dataset = [];
 
 						switch (par){
+						    {# draw tsne #}
 						    case 0:
                                 dataset.push({label: "high_freq",
                                     backgroundColor: window.chartColors.red,
@@ -118,6 +132,18 @@
 								dataset.push({label: "low_freq",
                                     backgroundColor: window.chartColors.green,
                                     data: generateData({{ x_vals|custom_slice:low_freq }}, {{ y_vals|custom_slice:low_freq }}) });
+                                break;
+                            {# draw zipf #}
+                            case 1:
+                                dataset.push({label: "high_freq",
+                                    backgroundColor: window.chartColors.red,
+                                    data: generateZipfData({{ freqs|custom_slice:high_freq }}, 0) });
+                                dataset.push({label: "mid_freq",
+                                    backgroundColor: window.chartColors.blue,
+                                    data: generateZipfData({{ freqs|custom_slice:mid_freq }}, {{ high_freq|get_element:1 }}) });
+								dataset.push({label: "low_freq",
+                                    backgroundColor: window.chartColors.green,
+                                    data: generateZipfData({{ freqs|custom_slice:low_freq }}, {{ mid_freq|get_element:1 }}) });
                                 break;
                         }
 
@@ -147,9 +173,9 @@
                             }
                         });
                         // draw zipf
-						var ctx = document.getElementById('canvas2').getContext('2d');
+						var ctx2 = document.getElementById('canvas2').getContext('2d');
 
-                        window.myScatter = Chart.Scatter(ctx, {
+                        window.myScatter = Chart.Scatter(ctx2, {
                             data: createChartData(1),
                             options: {
                                 title: {
@@ -194,7 +220,7 @@
 						var ctx = document.getElementById('canvas').getContext('2d');
 						window.myScatter.destroy();
 						window.myScatter = Chart.Scatter(ctx, {
-							data: createChartData(2),
+							data: createChartData(1),
 							options: {
 								title: {
 									display: true,
