@@ -10,18 +10,22 @@ import numpy as np  # array handling
 from django.views.decorators.csrf import csrf_exempt
 
 
-def use_model(request, perplexity=30):
+def use_model(request, set=0, perplexity=30):
     from gensim.models.word2vec import Word2Vec
 
     model = Word2Vec.load("word2vec_sg.model")
+    if set == 1:
+        model = Word2Vec.load("word2vec_image_sg.model")
+    elif set == 2:
+        model = Word2Vec.load("word2vec_mask_sg.model")
     # most_similar(model, ['china', 'mask', 'covid19'], 100).to_csv("word2vec.csv")
     # print(model.wv.similarity('covid19', 'covid19'))
 
     # get all label and (x,y)
-    x_vals, y_vals, labels = tsne(perplexity)
+    x_vals, y_vals, labels = tsne(perplexity, model)
 
     # create zipf data
-    words, freqs = create_zipf()
+    words, freqs = create_zipf(set)
 
     # define high, mid, low frequency
     HIGH_FREQ = 100  # [0, 100)
@@ -29,7 +33,7 @@ def use_model(request, perplexity=30):
     # low freq [1000,)
 
     # prepare template render data
-    d = template_data(x_vals, y_vals, labels, words, HIGH_FREQ, MID_FREQ, "covid19")
+    d = template_data(x_vals, y_vals, labels, words, HIGH_FREQ, MID_FREQ)
 
     return_dict = {
         'high_freq': [0,HIGH_FREQ],
@@ -47,10 +51,8 @@ def use_model(request, perplexity=30):
     return render(request, 'search_engine/w2v_tsne.html', return_dict)
 
 
-def tsne(perplexity):
+def tsne(perplexity, model):
     from gensim.models.word2vec import Word2Vec
-
-    model = Word2Vec.load("word2vec_sg.model")
 
     x_vals, y_vals, labels = reduce_dimensions(model, perplexity)
 
@@ -117,16 +119,28 @@ def plot_with_matplotlib(x_vals, y_vals, labels, draw_words):
 
 
 # return words list and freq list
-def create_zipf():
-    a = StemFreq.objects.all()
-    title = 'Stemming'
+def create_zipf(set):
+    from .utils import get_subset
 
     words = []
     freq = []
 
-    for i in a:
-        words.append(i.word)
-        freq.append(i.frequency)
+    if set == 0:
+        a = StemFreq.objects.all()
+        for i in a:
+            words.append(i.word)
+            freq.append(i.frequency)
+
+    elif set == 1:
+        wf, w = get_subset('image')
+        words = list(wf.keys())
+        freq = list(wf.values())
+
+    elif set == 2:
+        wf, w = get_subset('mask')
+        words = list(wf.keys())
+        freq = list(wf.values())
+
 
     return words, freq
 
@@ -151,7 +165,7 @@ def get_tsne_data():
 # args: words => from Stemfreq Model
 # args: hf, mf => High Frequency, Mid Frequency
 # args: name => prefix of return dict's key
-def template_data(x_vals, y_vals, labels, words, hf, mf, name):
+def template_data(x_vals, y_vals, labels, words, hf, mf):
     high_label = []
     high_x = []
     high_y = []
@@ -177,8 +191,8 @@ def template_data(x_vals, y_vals, labels, words, hf, mf, name):
             low_y.append(y_vals[cnt])
 
     return_dict = {
-      "{}_x".format(name): high_x + mid_x + low_x,
-      "{}_y".format(name): high_y + mid_y + low_y,
+      "x": high_x + mid_x + low_x,
+      "y": high_y + mid_y + low_y,
     }
 
     return return_dict
