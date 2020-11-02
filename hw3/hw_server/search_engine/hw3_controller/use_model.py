@@ -4,8 +4,7 @@ from ..models import Word, StemFreq, Tsne
 
 import pandas as pd
 
-from sklearn.decomposition import IncrementalPCA  # inital reduction
-from sklearn.manifold import TSNE  # final reduction
+from tsnecuda import TSNE
 import numpy as np  # array handling
 
 from django.views.decorators.csrf import csrf_exempt
@@ -61,11 +60,8 @@ def tsne(request):
 
         # count model #
         model_num = 0
-        ts = Tsne.objects.latest('id')
-
-        print(ts.model_num)
-
         try:
+            ts = Tsne.objects.latest('id')
             model_num = ts.model_num + 1
         except:
             model_num = 0
@@ -102,7 +98,7 @@ def reduce_dimensions(model, perplexity):
 
     # reduce using t-SNE
     vectors = np.asarray(vectors)
-    tsne = TSNE(n_components=num_dimensions, perplexity=perplexity, random_state=0)
+    tsne = TSNE(n_components=num_dimensions, perplexity=perplexity)
     vectors = tsne.fit_transform(vectors)
 
     x_vals = [v[0] for v in vectors]
