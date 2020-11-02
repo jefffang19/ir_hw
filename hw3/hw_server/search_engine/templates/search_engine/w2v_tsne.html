@@ -68,19 +68,19 @@
 		{% comment %} Make sure to keep all page content within the #page-content-wrapper {% endcomment %}
 		<div id="page-content-wrapper">
 			<div class="container-fluid">
-				<h1 class="container" id="chart_title">Covid-19 {{ title }} Zipf Chart</h1>
+				<h1 class="container" id="chart_title">Covid-19 Word2Vec T-SNE Chart</h1>
 				{% comment %} chart below {% endcomment %}
 				<div style="width:100%">
 					<canvas id="canvas" class="container canvas"></canvas>
 				</div>
+				<h1 class="container" id="chart_title2">Covid-19 Zipf Chart</h1>
+				{% comment %} chart below {% endcomment %}
+				<div style="width:100%">
+					<canvas id="canvas2" class="container canvas"></canvas>
+				</div>
+
 				{% comment %} <button id="randomizeData">Randomize Data</button> {% endcomment %}
 				<script>
-					var high_x = {{ high_x }};
-					var high_y = {{ high_y}};
-					var mid_x = {{ mid_x }};
-					var mid_y = {{ mid_y }};
-					var low_x = {{ low_x }};
-					var low_y = {{ low_y }};
 
 					function generateData(x_vals, y_vals) {
 						var data = [];
@@ -111,13 +111,13 @@
 						    case 0:
                                 dataset.push({label: "high_freq",
                                     backgroundColor: window.chartColors.red,
-                                    data: generateData(high_x, high_y) });
+                                    data: generateData({{ x_vals|custom_slice:high_freq }}, {{ y_vals|custom_slice:high_freq }}) });
                                 dataset.push({label: "mid_freq",
                                     backgroundColor: window.chartColors.blue,
-                                    data: generateData(mid_x, mid_y) });
+                                    data: generateData({{ x_vals|custom_slice:mid_freq }}, {{ y_vals|custom_slice:mid_freq }}) });
 								dataset.push({label: "low_freq",
                                     backgroundColor: window.chartColors.green,
-                                    data: generateData(low_x, low_y) });
+                                    data: generateData({{ x_vals|custom_slice:low_freq }}, {{ y_vals|custom_slice:low_freq }}) });
                                 break;
                         }
 
@@ -134,10 +134,23 @@
 
 
 					window.onload = function() {
+						// draw tsne
 						var ctx = document.getElementById('canvas').getContext('2d');
 
                         window.myScatter = Chart.Scatter(ctx, {
                             data: createChartData(0),
+                            options: {
+                                title: {
+                                    display: true,
+                                    text: 'Scatter Chart'
+                                },
+                            }
+                        });
+                        // draw zipf
+						var ctx = document.getElementById('canvas2').getContext('2d');
+
+                        window.myScatter = Chart.Scatter(ctx, {
+                            data: createChartData(1),
                             options: {
                                 title: {
                                     display: true,
