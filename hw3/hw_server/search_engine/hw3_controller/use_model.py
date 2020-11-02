@@ -13,20 +13,11 @@ def use_model(request):
     from gensim.models.word2vec import Word2Vec
 
     model = Word2Vec.load("word2vec_sg.model")
-    most_similar(model, ['china', 'mask', 'covid19'], 100).to_csv("word2vec.csv")
-
-    print(model.wv.similarity('covid19', 'covid19'))
+    # most_similar(model, ['china', 'mask', 'covid19'], 100).to_csv("word2vec.csv")
+    # print(model.wv.similarity('covid19', 'covid19'))
 
     # get all label and (x,y)
-    tsne = Tsne.objects.filter(model_num=0)
-
-    x_vals = []
-    y_vals = []
-    labels = []
-    for i in tsne:
-        x_vals.append(i.x_val)
-        y_vals.append(i.y_val)
-        labels.append(i.label)
+    x_vals, y_vals, labels = get_tsne_data()
 
     # create zipf data
     words, freqs = create_zipf()
@@ -37,38 +28,18 @@ def use_model(request):
     # low freq [1000,)
 
     # prepare template render data
-    high_label = []
-    high_x = []
-    high_y = []
-    mid_label = []
-    mid_x = []
-    mid_y = []
-    low_label = []
-    low_x = []
-    low_y = []
-    for cnt, w in enumerate(labels):
-        # high freq
-        if w in words[:HIGH_FREQ]:
-            high_label.append(cnt)
-            high_x.append(x_vals[cnt])
-            high_y.append(y_vals[cnt])
-        elif w in words[HIGH_FREQ:MID_FREQ]:
-            mid_label.append(cnt)
-            mid_x.append(x_vals[cnt])
-            mid_y.append(y_vals[cnt])
-        else:
-            low_label.append(cnt)
-            low_x.append(x_vals[cnt])
-            low_y.append(y_vals[cnt])
+    d = template_data(x_vals, y_vals, labels, words, HIGH_FREQ, MID_FREQ, "covid19")
 
     return_dict = {
         'high_freq': [0,HIGH_FREQ],
         'mid_freq': [HIGH_FREQ, MID_FREQ],
         'low_freq': [MID_FREQ, len(x_vals)],
-        'x_vals': high_x + mid_x + low_x,
-        'y_vals': high_y + mid_y + low_y,
         'freqs': freqs,
     }
+
+    return_dict = {**return_dict, **d}
+
+    print(return_dict.keys())
 
     # plot_with_matplotlib(x_vals, y_vals, labels, top_words)
 
@@ -168,3 +139,56 @@ def create_zipf():
         freq.append(i.frequency)
 
     return words, freq
+
+# return tsne data store in db
+# return : x, y, labels
+def get_tsne_data():
+    tsne = Tsne.objects.filter(model_num=0)
+
+    x_vals = []
+    y_vals = []
+    labels = []
+    for i in tsne:
+        x_vals.append(i.x_val)
+        y_vals.append(i.y_val)
+        labels.append(i.label)
+
+    return x_vals, y_vals, labels
+
+# return data to render in template
+# return (dict): x_val, y_val
+# args: x_vals, y_vals, labels => get from get_tsbe_data()
+# args: words => from Stemfreq Model
+# args: hf, mf => High Frequency, Mid Frequency
+# args: name => prefix of return dict's key
+def template_data(x_vals, y_vals, labels, words, hf, mf, name):
+    high_label = []
+    high_x = []
+    high_y = []
+    mid_label = []
+    mid_x = []
+    mid_y = []
+    low_label = []
+    low_x = []
+    low_y = []
+    for cnt, w in enumerate(labels):
+        # high freq
+        if w in words[:hf]:
+            high_label.append(cnt)
+            high_x.append(x_vals[cnt])
+            high_y.append(y_vals[cnt])
+        elif w in words[hf:mf]:
+            mid_label.append(cnt)
+            mid_x.append(x_vals[cnt])
+            mid_y.append(y_vals[cnt])
+        else:
+            low_label.append(cnt)
+            low_x.append(x_vals[cnt])
+            low_y.append(y_vals[cnt])
+
+    return_dict = {
+      "{}_x".format(name): high_x + mid_x + low_x,
+      "{}_y".format(name): high_y + mid_y + low_y,
+    }
+
+    return return_dict

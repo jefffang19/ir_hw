@@ -125,13 +125,13 @@
 						    case 0:
                                 dataset.push({label: "high_freq",
                                     backgroundColor: window.chartColors.red,
-                                    data: generateData({{ x_vals|custom_slice:high_freq }}, {{ y_vals|custom_slice:high_freq }}) });
+                                    data: generateData({{ covid19_x|custom_slice:high_freq }}, {{ covid19_y|custom_slice:high_freq }}) });
                                 dataset.push({label: "mid_freq",
                                     backgroundColor: window.chartColors.blue,
-                                    data: generateData({{ x_vals|custom_slice:mid_freq }}, {{ y_vals|custom_slice:mid_freq }}) });
+                                    data: generateData({{ covid19_x|custom_slice:mid_freq }}, {{ covid19_y|custom_slice:mid_freq }}) });
 								dataset.push({label: "low_freq",
                                     backgroundColor: window.chartColors.green,
-                                    data: generateData({{ x_vals|custom_slice:low_freq }}, {{ y_vals|custom_slice:low_freq }}) });
+                                    data: generateData({{ covid19_x|custom_slice:low_freq }}, {{ covid19_y|custom_slice:low_freq }}) });
                                 break;
                             {# draw zipf #}
                             case 1:
