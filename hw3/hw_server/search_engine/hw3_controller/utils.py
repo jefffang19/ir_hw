@@ -36,3 +36,10 @@ def get_subset(keyword):
     words_freq = {k: v for k, v in sorted(words_freq.items(), key=lambda item: item[1], reverse=True)}
 
     return words_freq, words
+
+def stemmed(keyword):
+    from search_engine.parsing_utils import string_to_tokens
+    keywords_cleaned = string_to_tokens(keyword)
+
+    for i in keywords_cleaned:
+        return i[0]

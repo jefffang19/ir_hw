@@ -16,3 +16,7 @@ db.sqlite3
 /hw3/hw_server/word2vec_2003_sg.model
 /hw3/hw_server/word2vec_bat_sg.model
 /hw3/hw_server/word2vec_mask_sg.model
+/hw3/hw_server/word2vec_2003.csv
+/hw3/hw_server/word2vec_bat.csv
+/hw3/hw_server/word2vec_image.csv
+/hw3/hw_server/word2vec_mask.csv

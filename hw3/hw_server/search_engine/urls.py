@@ -28,4 +28,5 @@ urlpatterns = [
     path('create_model', views.create_model, name = 'create_model'),
     path('use_model', views.use_model, name = 'use_model'),
     path('tsne', views.tsne, name = 'tsne'),
+    path('test_model_similar', views.test_model_similar, name = 'test_model_similar'),
 ]

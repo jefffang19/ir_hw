@@ -1,6 +1,6 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from ..models import Word
-from .utils import get_subset
+from .utils import get_subset, stemmed
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -36,9 +36,31 @@ def create_model(request):
         words = [words]
 
         # word2vector
-        model = Word2Vec(words, size=100, window=5, min_count=2, compute_loss=True, workers=4, sg=1)
+        model = Word2Vec(words, size=100, window=2, min_count=1, compute_loss=True, workers=4, sg=1)
         # training_loss = model.get_latest_training_loss()
         # print(training_loss)
         model.save("word2vec_{}_sg.model".format(keyword))
 
         return HttpResponse("{} Model created".format(keyword))
+
+@csrf_exempt
+def test_model_similar(request):
+    from gensim.models.word2vec import Word2Vec
+
+    if request.method == 'POST':
+        keyword = request.POST['keyword']
+        model = Word2Vec.load("word2vec_{}_sg.model".format(keyword))
+
+        from .use_model import most_similar
+        most_similar(model, ['ct', stemmed(keyword)], 2000).to_csv("word2vec_{}.csv".format(keyword))
+
+        # get cosine similarity ranking
+        import pandas as pd
+        df = pd.read_csv('word2vec_{}.csv'.format(keyword))
+        pos = df[df[stemmed(keyword)] == 'ct'].index.values.astype(int)[0]
+
+        return JsonResponse({
+            'cos_sim': str(model.wv.similarity('ct', stemmed(keyword))),
+            'vocab len': str(len(model.wv.vocab)),
+            'rank': str(pos),
+        })
