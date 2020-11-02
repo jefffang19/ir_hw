@@ -195,35 +195,3 @@ def template_data(x_vals, y_vals, labels, words, hf, mf, name):
     }
 
     return return_dict
-
-def get_subset(keyword):
-    from search_engine.parsing_utils import string_to_tokens
-    corrected_keyword = keyword
-
-    # query for the data subset
-    keywords_cleaned = string_to_tokens(corrected_keyword)
-    articles_pk = []  # get the target articles' pk
-
-    for i in keywords_cleaned:
-        w = Word.objects.filter(context=i[0])
-
-        for j in w:
-            mode = j.position.get()
-            # append article pk
-            if mode.pk not in articles_pk:
-                articles_pk.append(mode.pk)
-
-    words = {}
-    # get the target articles' words
-    for i in articles_pk:
-        w = Word.objects.filter(position__id=i)
-        for j in w:
-            if j.context not in words.keys():
-                words[j.context] = 1
-            else:
-                words[j.context] += 1
-
-    # sort the dict by value
-    words = {k: v for k, v in sorted(words.items(), key=lambda item: item[1], reverse=True)}
-
-    return words

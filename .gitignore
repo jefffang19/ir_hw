@@ -12,3 +12,7 @@ pubmed/
 db.sqlite3
 /hw3/hw_server/word2vec.csv
 /hw3/hw_server/word2vec_sg.model
+/hw3/hw_server/word2vec_image_sg.model
+/hw3/hw_server/word2vec_2003_sg.model
+/hw3/hw_server/word2vec_bat_sg.model
+/hw3/hw_server/word2vec_mask_sg.model
