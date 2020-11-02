@@ -43,9 +43,8 @@
 		<!-- Sidebar -->
 		<div id="sidebar-wrapper">
 			<ul class="sidebar-nav">
-				<li> <a>_</a> </li>
-				<li> <button type="button" id="word0" class="btn btn-outline-secondary">Mask</button> </li>
-				<li> <button type="button" id="word1" class="btn btn-outline-secondary">Children</button> </li>
+				<li> <a href="{% url 'use_model' set=1 perplexity=30%}">Image</a> </li>
+				<li> <a href="{% url 'use_model' set=2 perplexity=30%}">Mask</a> </li>
 			</ul>
 		</div> <!-- /#sidebar-wrapper -->
 		{% comment %} radio buttons {% endcomment %}
