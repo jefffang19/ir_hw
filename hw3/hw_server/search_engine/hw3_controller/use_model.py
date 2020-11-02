@@ -8,6 +8,8 @@ from sklearn.decomposition import IncrementalPCA  # inital reduction
 from sklearn.manifold import TSNE  # final reduction
 import numpy as np  # array handling
 
+from django.views.decorators.csrf import csrf_exempt
+
 
 def use_model(request):
     from gensim.models.word2vec import Word2Vec
@@ -47,28 +49,32 @@ def use_model(request):
 
 
 # tsne reduce dim cost a lot of time
+@csrf_exempt
 def tsne(request):
-    from gensim.models.word2vec import Word2Vec
+    if request.method == 'POST':
+        from gensim.models.word2vec import Word2Vec
 
-    model = Word2Vec.load("word2vec_sg.model")
-    x_vals, y_vals, labels = reduce_dimensions(model)
+        model = Word2Vec.load("word2vec_sg.model")
 
-    # count model #
-    model_num = 0
-    ts = Tsne.objects.latest('id')
+        perplexity = float(request.POST['perplexity'])
+        x_vals, y_vals, labels = reduce_dimensions(model, perplexity)
 
-    print(ts.model_num)
-
-    try:
-        model_num = ts.model_num + 1
-    except:
+        # count model #
         model_num = 0
+        ts = Tsne.objects.latest('id')
 
-    for i in range(len(labels)):
-        Tsne.objects.create(model_num=model_num, x_val=x_vals[i], y_val=y_vals[i], label=labels[i],
-                            dataset_name="Covid-19")
+        print(ts.model_num)
 
-    return HttpResponse("tsne data create success")
+        try:
+            model_num = ts.model_num + 1
+        except:
+            model_num = 0
+
+        for i in range(len(labels)):
+            Tsne.objects.create(model_num=model_num, x_val=x_vals[i], y_val=y_vals[i], label=labels[i],
+                                dataset_name="Covid-19", perplexity=perplexity)
+
+        return HttpResponse("tsne data create success")
 
 def most_similar(w2v_model, words, topn=10):
     similar_df = pd.DataFrame()
@@ -81,7 +87,7 @@ def most_similar(w2v_model, words, topn=10):
     return similar_df
 
 
-def reduce_dimensions(model):
+def reduce_dimensions(model, perplexity):
     num_dimensions = 2  # final num dimensions (2D, 3D, etc)
 
     vectors = []  # positions in vector space
@@ -96,7 +102,7 @@ def reduce_dimensions(model):
 
     # reduce using t-SNE
     vectors = np.asarray(vectors)
-    tsne = TSNE(n_components=num_dimensions, random_state=0)
+    tsne = TSNE(n_components=num_dimensions, perplexity=perplexity, random_state=0)
     vectors = tsne.fit_transform(vectors)
 
     x_vals = [v[0] for v in vectors]

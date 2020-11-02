@@ -24,3 +24,4 @@ class Tsne(models.Model):
     x_val = models.FloatField()
     y_val = models.FloatField()
     label = models.CharField(max_length=200)
+    perplexity = models.IntegerField()

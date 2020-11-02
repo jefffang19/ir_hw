@@ -22,7 +22,7 @@ def create_model(request):
         words = [words]
 
         # word2vector
-        model = Word2Vec(words, size=100, window=5, min_count=2, compute_loss=True, workers=4, sg=1)
+        model = Word2Vec(words, size=100, window=5, min_count=1, compute_loss=True, workers=4, sg=1)
         # training_loss = model.get_latest_training_loss()
         # print(training_loss)
         model.save("word2vec_sg.model")
@@ -36,7 +36,7 @@ def create_model(request):
         words = [words]
 
         # word2vector
-        model = Word2Vec(words, size=100, window=2, min_count=1, compute_loss=True, workers=4, sg=1)
+        model = Word2Vec(words, size=100, window=3, min_count=1, compute_loss=True, workers=4, sg=1)
         # training_loss = model.get_latest_training_loss()
         # print(training_loss)
         model.save("word2vec_{}_sg.model".format(keyword))
@@ -63,4 +63,14 @@ def test_model_similar(request):
             'cos_sim': str(model.wv.similarity('ct', stemmed(keyword))),
             'vocab len': str(len(model.wv.vocab)),
             'rank': str(pos),
+        })
+    else:
+        model = Word2Vec.load("word2vec_sg.model")
+
+        from .use_model import most_similar
+        most_similar(model, ['ct', 'covid19'], 2000).to_csv("word2vec.csv")
+
+        return JsonResponse({
+            'cos_sim': str(model.wv.similarity('ct', 'imag')),
+            'vocab len': str(len(model.wv.vocab)),
         })
