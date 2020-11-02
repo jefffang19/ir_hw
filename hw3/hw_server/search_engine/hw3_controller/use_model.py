@@ -10,7 +10,7 @@ import numpy as np  # array handling
 from django.views.decorators.csrf import csrf_exempt
 
 
-def use_model(request):
+def use_model(request, perplexity=30):
     from gensim.models.word2vec import Word2Vec
 
     model = Word2Vec.load("word2vec_sg.model")
@@ -18,7 +18,7 @@ def use_model(request):
     # print(model.wv.similarity('covid19', 'covid19'))
 
     # get all label and (x,y)
-    x_vals, y_vals, labels = tsne(50)
+    x_vals, y_vals, labels = tsne(perplexity)
 
     # create zipf data
     words, freqs = create_zipf()
