@@ -22,6 +22,8 @@ def use_model(request, set=0, perplexity=30):
     elif set == 2:
         model = Word2Vec.load("word2vec_mask_sg.model")
         keyword = "mask"
+
+    # print(type(model.wv.most_similar(keyword, topn=100)))
     # most_similar(model, ['china', 'mask', 'covid19'], 100).to_csv("word2vec.csv")
     # print(model.wv.similarity('covid19', 'covid19'))
 
@@ -46,11 +48,12 @@ def use_model(request, set=0, perplexity=30):
         'freqs': freqs,
         'cos_sim': str(model.wv.similarity('ct', stemmed(keyword))),
         'subset_name': keyword,
+        'most_sim': model.wv.most_similar(stemmed(keyword), topn=10),
     }
 
     return_dict = {**return_dict, **d}
 
-    print(return_dict.keys())
+    # print(return_dict.keys())
 
     # plot_with_matplotlib(x_vals, y_vals, labels, top_words)
 

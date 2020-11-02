@@ -34,7 +34,7 @@
 	<nav class="navbar navbar-expand navbar-dark bg-primary"> <a href="#menu-toggle" id="menu-toggle" class="navbar-brand"><span class="navbar-toggler-icon"></span></a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
 		<div class="collapse navbar-collapse" id="navbarsExample02">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active"> <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a> </li>
+				<li class="nav-item active"> <a class="nav-link" href="{% url 'use_model' %}">Home <span class="sr-only">(current)</span></a> </li>
 			</ul>
 			<form class="form-inline my-2 my-md-0"> </form>
 		</div>
@@ -271,91 +271,23 @@
 				<br>
 
 				{% comment %} table below {% endcomment %}
-                {% comment %} <h2>Ranking of CT in the following subsets</h2>
+                <h2>Most Similiar words with {{ subset_name }}</h2>
 				<table class="table table-striped container" id="container_table">
 					<thead class="thead-dark">
 						<tr>
-						<th scope="col">Rank %</th>
-						<th scope="col">Rank #</th>
-                        <th scope="col">Subset size</th>
-						<th scope="col">Subset</th>
+                        <th scope="col">cosine similiarity</th>
+						<th scope="col">word</th>
 						</tr>
 					</thead>
 					<tbody>
+                    {% for i in most_sim %}
 						<tr>
-						<th scope="row">{{ mask_rank|cal_percentage:mask_subset_article_num }}</th>
-							<td>{{ mask_rank }}</td>
-                            <td>{{ mask_subset_article_num  }}</td>
-							<td>mask</td>
+                            <th scope="row">{{ i|get_element:1 }}</th>
+                            <td>{{ i|get_element:0 }}</td>
 						</tr>
-                        <tr>
-						<th scope="row">{{ children_rank|cal_percentage:children_subset_article_num }}</th>
-							<td>{{ children_rank }}</td>
-                            <td>{{ children_subset_article_num  }}</td>
-							<td>children</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ 2003_rank|cal_percentage:2003_subset_article_num }}</th>
-							<td>{{ 2003_rank }}</td>
-                            <td>{{ 2003_subset_article_num  }}</td>
-							<td>2003</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ 2019_rank|cal_percentage:2019_subset_article_num }}</th>
-							<td>{{ 2019_rank }}</td>
-                            <td>{{ 2019_subset_article_num  }}</td>
-							<td>2019</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ pneumothorax_rank|cal_percentage:pneumothorax_subset_article_num }}</th>
-							<td>{{ pneumothorax_rank }}</td>
-                            <td>{{ pneumothorax_subset_article_num  }}</td>
-							<td>pneumothorax</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ pneumonia_rank|cal_percentage:pneumonia_subset_article_num }}</th>
-							<td>{{ pneumonia_rank }}</td>
-                            <td>{{ pneumonia_subset_article_num  }}</td>
-							<td>pneumonia</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ image_rank|cal_percentage:image_subset_article_num }}</th>
-							<td>{{ image_rank }}</td>
-                            <td>{{ image_subset_article_num  }}</td>
-							<td>image</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ adult_rank|cal_percentage:adult_subset_article_num }}</th>
-							<td>{{ adult_rank }}</td>
-                            <td>{{ adult_subset_article_num  }}</td>
-							<td>adult</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ bat_rank|cal_percentage:bat_subset_article_num }}</th>
-							<td>{{ bat_rank }}</td>
-                            <td>{{ bat_subset_article_num  }}</td>
-							<td>bat</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ immune_rank|cal_percentage:immune_subset_article_num }}</th>
-							<td>{{ immune_rank }}</td>
-                            <td>{{ immune_subset_article_num  }}</td>
-							<td>immune</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ wuhan_rank|cal_percentage:wuhan_subset_article_num }}</th>
-							<td>{{ wuhan_rank }}</td>
-                            <td>{{ wuhan_subset_article_num  }}</td>
-							<td>wuhan</td>
-						</tr>
-                        <tr>
-						<th scope="row">{{ vaccin_rank|cal_percentage:vaccin_subset_article_num }}</th>
-							<td>{{ vaccin_rank }}</td>
-                            <td>{{ vaccin_subset_article_num  }}</td>
-							<td>vaccine</td>
-						</tr>
+                    {% endfor %}
 					</tbody>
-				</table> {% endcomment %}
+				</table>
 				{% comment %} table above {% endcomment %}
 				{% comment %} table below {% endcomment %}
 {#				{% if freq|check_empty %}#}
