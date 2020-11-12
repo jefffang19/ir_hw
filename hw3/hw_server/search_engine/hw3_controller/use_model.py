@@ -47,6 +47,7 @@ def use_model(request, set=0, perplexity=30):
         'low_freq': [MID_FREQ, len(x_vals)],
         'freqs': freqs,
         'cos_sim': str(model.wv.similarity('ct', stemmed(keyword))),
+        'n95': str(model.wv.similarity('n95', stemmed(keyword))),
         'subset_name': keyword,
         'most_sim': model.wv.most_similar(stemmed(keyword), topn=10),
     }
