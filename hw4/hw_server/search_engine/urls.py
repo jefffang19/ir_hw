@@ -30,4 +30,6 @@ urlpatterns = [
     path('use_model/<int:set>/<int:perplexity>', views.use_model, name = 'use_model'),
     path('tsne', views.tsne, name = 'tsne'),
     path('test_model_similar', views.test_model_similar, name = 'test_model_similar'),
+    # hw4
+    path('tfidf', views.show_tfidef, name = 'tfidf'),
 ]
