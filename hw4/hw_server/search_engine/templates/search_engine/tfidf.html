@@ -11,7 +11,7 @@
     <title>IIrHW4</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href={% static "css/Highlight-Blue.css" %}>
-    <link rel="stylesheet" href={% static "css/styles.css" %}>
+    <link rel="stylesheet" href={% static "css/hw4_styles.css" %}>
 </head>
 
 <body>
@@ -37,24 +37,35 @@
         </div>
     </div>
     <div>
+{#        show formula images #}
         <div class="container">
             <div class="row">
-                <div class="col-md-3"><img>
+                {% for i in formula %}
+                <div class="col-md-3">
+                    <img src={% static i %}>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+{#        choose formula #}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
                         <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
                     </div>
                 </div>
-                <div class="col-md-3"><img>
+                <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
                         <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
                     </div>
                 </div>
-                <div class="col-md-3"><img>
+                <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
                         <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
                     </div>
                 </div>
-                <div class="col-md-3"><img>
+                <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
                         <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
                     </div>

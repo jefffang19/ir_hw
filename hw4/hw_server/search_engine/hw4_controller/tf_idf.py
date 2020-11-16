@@ -36,7 +36,10 @@ def show_tfidef(request):
 
     elif request.method == 'GET':
         form = WordForm()
-        template_dict = {'form': form}
+
+        display_formula = ['images/tf_raw_count.png', 'images/idf_unary.png', 'images/tf_term_frequency.png', 'images/idf_inverse_document_frequency.png']
+
+        template_dict = {'form': form, 'formula': display_formula}
         return render(request, "search_engine/tfidf.html", template_dict)
 
     else:
