@@ -10,17 +10,34 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def show_tfidef(request):
-    form = WordForm()
+    # user search
+    if request.method == 'POST':
+        form = WordForm(request.POST)
+        # get search word
+        if form.is_valid():
+            # we do NOT stem in this hw
+            origin_keyword = form.cleaned_data['keywords']
 
-    a = Article.objects.all()
+            a = Article.objects.all()
 
-    _tfidf = tfidf('COVID-19', 1, 1)
-    _tfidf.sort(key=lambda x: x[1], reverse=True)
+            _tfidf = tfidf(origin_keyword, 0, 1)
+            _tfidf.sort(key=lambda x: x[1], reverse=True)
 
-    # prepare data for template
-    docs_ranking = [i[0] for i in _tfidf]
-    docs_weight = [i[1] for i in _tfidf]
+            # prepare data for template
+            docs_ranking = [i[0] for i in _tfidf]
+            docs_weight = [i[1] for i in _tfidf]
 
-    template_dict = {'form': form, 'l_titles': docs_ranking, 'l_weights': docs_weight,
-                     'r_titles': docs_ranking, 'r_weights': docs_weight}
-    return render(request, "search_engine/tfidf.html", template_dict)
+            template_dict = {'form': form, 'l_titles': docs_ranking, 'l_weights': docs_weight,
+                             'r_titles': docs_ranking, 'r_weights': docs_weight}
+            return render(request, "search_engine/tfidf.html", template_dict)
+
+        else:
+            return HttpResponse('keyword serach failed')
+
+    elif request.method == 'GET':
+        form = WordForm()
+        template_dict = {'form': form}
+        return render(request, "search_engine/tfidf.html", template_dict)
+
+    else:
+        return HttpResponse('unsupported method')
