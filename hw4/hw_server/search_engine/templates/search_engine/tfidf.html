@@ -20,7 +20,7 @@
                 <h2 class="text-center">TF-iDF</h2>
                 <p class="text-center">Implement 3 kinds of tf-idf method</p>
             </div>
-            <div class="buttons"><a class="btn btn-primary" role="button" href="#">Other METHOD</a></div>
+            <div class="buttons"><a class="btn btn-primary" role="button" id="other_m">Other METHOD</a></div>
         </div>
     </div>
     <div>
@@ -153,6 +153,8 @@
         var l_dataset = 0;
         var r_dataset = 0;
 
+        var cos_sim = 0;
+
         {#window.onload = function () {#}
         {##}
         {##}
@@ -235,6 +237,11 @@
             r_dataset = 1;
         });
 
+        document.getElementById('other_m').addEventListener('click', function () {
+            if(cos_sim === 0) cos_sim = 1;
+            else cos_sim = 0;
+        });
+
         function sendQuery(){
             // clear list
             document.getElementById("l_title_list").innerHTML = "";
@@ -242,8 +249,12 @@
 
             // get input keyword
             const keyword = $('[id="keyword"]').val();
+
+            var controller_url;
+            if(cos_sim === 0) controller_url = "/search_engine/tfidf";
+            else controller_url = "/search_engine/create_tfidf_vec"
             $.ajax({
-                url: "/search_engine/tfidf",
+                url: controller_url,
                 type: 'POST',
                 data:{keyword:keyword, ltf: l_tf, lidf: l_idf, rtf: r_tf, ridf: r_idf, ldata: l_dataset, rdata: r_dataset},
                 success: function (data) {
@@ -253,7 +264,8 @@
                     for (i=0;i<data['l_titles'].length;i++){
                         l_list.innerHTML += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
                             '                                <div class="d-flex w-100 justify-content-between">\n' +
-                            '                                  <small>query term weight:' + data['l_weights'][i] + '</small>\n' +
+                            '                                  <small>query term weight/cos_similarity:' + data['l_weights'][i] + '</small>\n' +
+                            '                                  <small>doc len:' + data['l_len'][i] + '</small>\n' +
                             '                                </div>\n' +
                             '                                <p class="mb-1">' + data['l_titles'][i] + '</p>\n' +
                             '                              </a>';
@@ -262,7 +274,8 @@
                     for (i=0;i<data['r_titles'].length;i++){
                         r_list.innerHTML += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
                             '                                <div class="d-flex w-100 justify-content-between">\n' +
-                            '                                  <small>query term weight:' + data['r_weights'][i] + '</small>\n' +
+                            '                                  <small>query term weight/cos_similarity:' + data['r_weights'][i] + '</small>\n' +
+                            '                                  <small>doc len:' + data['r_len'][i] + '</small>\n' +
                             '                                </div>\n' +
                             '                                <p class="mb-1">' + data['r_titles'][i] + '</p>\n' +
                             '                              </a>';

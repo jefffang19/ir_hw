@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from ..forms import WordForm
 
-from .tfidf_algorithm import tfidf
+from .tfidf_algorithm import tfidf, tfidf_vec, cos_sim
 import numpy as np  # array handling
 
 from django.views.decorators.csrf import csrf_exempt
@@ -25,8 +25,10 @@ def show_tfidef(request):
         # prepare data for template
         docs_ranking_l = [i[0] for i in l_tfidf]
         docs_weight_l = [i[1] for i in l_tfidf]
+        docs_len_l = [i[2] for i in l_tfidf]
         docs_ranking_r = [i[0] for i in r_tfidf]
         docs_weight_r = [i[1] for i in r_tfidf]
+        docs_len_r = [i[2] for i in r_tfidf]
 
         # display formula images
         available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png',
@@ -34,8 +36,8 @@ def show_tfidef(request):
                              'images/idf_inverse_document_frequency.png', 'images/idf_unary.png',
                              'images/idf_inverse_document_frequency_smooth.png']
 
-        template_dict = {'l_titles': docs_ranking_l, 'l_weights': docs_weight_l,
-                         'r_titles': docs_ranking_r, 'r_weights': docs_weight_r,
+        template_dict = {'l_titles': docs_ranking_l, 'l_weights': docs_weight_l, 'l_len': docs_len_l,
+                         'r_titles': docs_ranking_r, 'r_weights': docs_weight_r, 'r_len': docs_len_r,
                          'formula': available_formula}
         # return render(request, "search_engine/tfidf.html", template_dict)
         return JsonResponse(template_dict, safe=False)
@@ -51,3 +53,44 @@ def show_tfidef(request):
 
     else:
         return HttpResponse('unsupported method')
+
+@csrf_exempt
+def create_tfidf_vec(request):
+    # user search
+    if request.method == 'POST':
+        origin_keyword = request.POST['keyword']
+        tfidf_method = [int(request.POST['ltf']), int(request.POST['lidf']), int(request.POST['rtf']),
+                        int(request.POST['ridf'])]
+        l_vec, l_titles, l_len = tfidf_vec(origin_keyword, tfidf_method[0], tfidf_method[1], int(request.POST['ldata']))
+        l_cos = cos_sim(l_vec)
+        left = []
+        for i in range(len(l_cos)):
+            left.append([l_titles[i], l_cos[i], l_len[i]])
+        left.sort(key=lambda x: x[1], reverse=True)
+
+        r_vec, r_titles, r_len = tfidf_vec(origin_keyword, tfidf_method[2], tfidf_method[3], int(request.POST['rdata']))
+        r_cos = cos_sim(r_vec)
+        right = []
+        for i in range(len(r_cos)):
+            right.append([r_titles[i], r_cos[i], r_len[i]])
+        right.sort(key=lambda x: x[1], reverse=True)
+
+        # prepare data for template
+        docs_ranking_l = [i[0] for i in left]
+        docs_weight_l = [i[1] for i in left]
+        docs_len_l = [i[2] for i in left]
+        docs_ranking_r = [i[0] for i in right]
+        docs_weight_r = [i[1] for i in right]
+        docs_len_r = [i[2] for i in right]
+
+        # display formula images
+        available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png',
+                             'images/tf_log_normalization.png',
+                             'images/idf_inverse_document_frequency.png', 'images/idf_unary.png',
+                             'images/idf_inverse_document_frequency_smooth.png']
+
+        template_dict = {'l_titles': docs_ranking_l, 'l_weights': docs_weight_l, 'l_len': docs_len_l,
+                         'r_titles': docs_ranking_r, 'r_weights': docs_weight_r, 'r_len': docs_len_r,
+                         'formula': available_formula}
+        # return render(request, "search_engine/tfidf.html", template_dict)
+        return JsonResponse(template_dict, safe=False)

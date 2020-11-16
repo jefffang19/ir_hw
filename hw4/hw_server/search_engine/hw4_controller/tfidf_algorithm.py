@@ -15,10 +15,65 @@ def tfidf(query_word, method_tf, method_idf, subset):
     doc_weight = []
 
     for i in range(len(bmc)):
-        doc_weight.append( [bmc[i].title, tf(query_word, i, method_tf, bmc)*idf(query_word, method_idf, bmc)] )
+        doc_weight.append( [bmc[i].title, tf(query_word, i, method_tf, bmc)*idf(query_word, method_idf, bmc), len(bmc[i].background.split(' '))+len(bmc[i].methods.split(' '))+len(bmc[i].results.split(' '))+len(bmc[i].conclusion.split(' '))] )
 
 
     return doc_weight
+
+# create vector
+def tfidf_vec(queryword, method_tf, method_idf, subset):
+    # get the docs
+    bmc = ''
+    if subset == 0:
+        bmc = Bmc.objects.filter(subset = 'colorectal_cancer')[:100]
+    elif subset == 1:
+        bmc = Bmc.objects.filter(subset = 'genetic_disease')[:100]
+    else:
+        assert "Wrong Subset Error"
+
+    bmc = list(bmc)
+
+    d_lens = [len(queryword.split(' '))]
+    titles = [queryword]
+    corpus = [queryword]
+    # corpus_bg = [queryword]
+    # corpus_mt = [queryword]
+    # corpus_rt = [queryword]
+    # corpus_con = [queryword]
+    for i in bmc:
+        s = '{} {} {} {}'.format(i.background, i.methods, i.results, i.conclusion)
+        titles.append(i.title)
+        d_lens.append(len(s.split(' ')))
+        corpus.append(s)
+
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    use_idf = True
+    smooth_idf = False
+    sublinear = False
+    if method_idf == 0:
+        use_idf = True
+    elif method_idf == 1:
+        use_idf = False
+    else:
+        smooth_idf = False
+    if method_tf == 2:
+        sublinear = True
+
+    tfidf_vec = TfidfVectorizer(use_idf=use_idf, smooth_idf=smooth_idf, sublinear_tf=sublinear)
+    tfidf_matrix = tfidf_vec.fit_transform(corpus)
+
+    # return [cosine_similarity(tfidf_matrix.toarray()[0].reshape(1, -1), tfidf_matrix.toarray()[1].reshape(1, -1))]
+    return tfidf_matrix.toarray(), titles, d_lens
+
+def cos_sim(matrix):
+    from sklearn.metrics.pairwise import cosine_similarity
+    c = []
+    for i in range(len(matrix)):
+        c.append(cosine_similarity(matrix[0].reshape(1, -1), matrix[i].reshape(1, -1))[0, 0] )
+
+    return c
 
 def tf(query_word, doc_n, method, bmc):
     _ftd = ftd(query_word, bmc)
@@ -74,7 +129,7 @@ def ftd(query_word, bmc):
                 if word == query_word:
                     query_word_cnt += 1
 
-        temp_ftd['title'] = doc.title
+        # temp_ftd['title'] = doc.title
         temp_ftd['ftd'] = query_word_cnt
         temp_ftd['words_cnt'] = all_words_cnt
         f_td.append(temp_ftd)

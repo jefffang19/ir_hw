@@ -31,4 +31,5 @@ urlpatterns = [
     path('test_model_similar', views.test_model_similar, name = 'test_model_similar'),
     # hw4
     path('tfidf', views.show_tfidef, name = 'tfidf'),
+    path('create_tfidf_vec', views.create_tfidf_vec, name = 'create_tfidf_vec'),
 ]
