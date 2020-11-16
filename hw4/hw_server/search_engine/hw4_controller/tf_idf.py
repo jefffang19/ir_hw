@@ -28,13 +28,14 @@ def show_tfidef(request):
             docs_weight = [i[1] for i in _tfidf]
 
             # display formula images
-            display_formula = ['images/tf_raw_count.png', 'images/idf_unary.png', 'images/tf_term_frequency.png',
-                               'images/idf_inverse_document_frequency.png', 'images/idf_inverse_document_frequency.png', 'images/i']
-            available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png', 'images/tf_term_']
+            available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png',
+                                 'images/tf_log_normalization.png',
+                                 'images/idf_inverse_document_frequency.png', 'images/idf_unary.png',
+                                 'images/idf_inverse_document_frequency_smooth.png']
 
             template_dict = {'form': form, 'l_titles': docs_ranking, 'l_weights': docs_weight,
                              'r_titles': docs_ranking, 'r_weights': docs_weight,
-                             'formula': display_formula}
+                             'formula': available_formula}
             return render(request, "search_engine/tfidf.html", template_dict)
 
         else:
@@ -43,9 +44,12 @@ def show_tfidef(request):
     elif request.method == 'GET':
         form = WordForm()
 
-        display_formula = ['images/tf_raw_count.png', 'images/idf_unary.png', 'images/tf_term_frequency.png', 'images/idf_inverse_document_frequency.png']
+        available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png',
+                             'images/tf_log_normalization.png',
+                             'images/idf_inverse_document_frequency.png', 'images/idf_unary.png',
+                             'images/idf_inverse_document_frequency_smooth.png']
 
-        template_dict = {'form': form, 'formula': display_formula}
+        template_dict = {'form': form, 'formula': available_formula}
         return render(request, "search_engine/tfidf.html", template_dict)
 
     else:
