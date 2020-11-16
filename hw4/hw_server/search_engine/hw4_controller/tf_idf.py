@@ -27,8 +27,13 @@ def show_tfidef(request):
             docs_ranking = [i[0] for i in _tfidf]
             docs_weight = [i[1] for i in _tfidf]
 
+            # display formula images
+            display_formula = ['images/tf_raw_count.png', 'images/idf_unary.png', 'images/tf_term_frequency.png',
+                               'images/idf_inverse_document_frequency.png']
+
             template_dict = {'form': form, 'l_titles': docs_ranking, 'l_weights': docs_weight,
-                             'r_titles': docs_ranking, 'r_weights': docs_weight}
+                             'r_titles': docs_ranking, 'r_weights': docs_weight,
+                             'formula': display_formula}
             return render(request, "search_engine/tfidf.html", template_dict)
 
         else:
