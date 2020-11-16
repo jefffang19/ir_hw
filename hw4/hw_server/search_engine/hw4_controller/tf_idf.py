@@ -29,7 +29,8 @@ def show_tfidef(request):
 
             # display formula images
             display_formula = ['images/tf_raw_count.png', 'images/idf_unary.png', 'images/tf_term_frequency.png',
-                               'images/idf_inverse_document_frequency.png']
+                               'images/idf_inverse_document_frequency.png', 'images/idf_inverse_document_frequency.png', 'images/i']
+            available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png', 'images/tf_term_']
 
             template_dict = {'form': form, 'l_titles': docs_ranking, 'l_weights': docs_weight,
                              'r_titles': docs_ranking, 'r_weights': docs_weight,

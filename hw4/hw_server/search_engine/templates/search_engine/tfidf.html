@@ -42,7 +42,7 @@
             <div class="row">
                 {% for i in formula %}
                 <div class="col-md-3">
-                    <img src={% static i %}>
+                    <img src={% static i %} id="image{{ forloop.counter0 }}">
                 </div>
                 {% endfor %}
             </div>
@@ -52,22 +52,22 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="l_tf_1">First Item</a><a class="dropdown-item" id="l_tf_2">Second Item</a><a class="dropdown-item" id="l_tf_3">Third Item</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="l_idf_1">First Item</a><a class="dropdown-item" id="l_idf_2">Second Item</a><a class="dropdown-item" id="l_idf_3">Third Item</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="r_tf_1">First Item</a><a class="dropdown-item" id="r_tf_2">Second Item</a><a class="dropdown-item" id="r_tf_3">Third Item</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="r_idf_1">First Item</a><a class="dropdown-item" id="r_tf_2">Second Item</a><a class="dropdown-item" id="r_tf_3">Third Item</a></div>
                     </div>
                 </div>
             </div>
@@ -107,6 +107,21 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var l_tf = 0;
+        var l_idf = 0;
+        var r_tf = 0;
+        var r_idf = 0;
+
+        {#window.onload = function () {#}
+        {##}
+        {##}
+
+        document.getElementById('r_tf_1').addEventListener('click', function () {
+            document.getElementById('image0').src = "{% static formula|get_element:1 %}";
+        });
+
+    </script>
 </body>
 
 </html>
