@@ -1,4 +1,4 @@
-from ..models import Article, Word, StemFreq, OriginFreq
+from ..models import Article, Word, StemFreq, OriginFreq, Bmc
 from django.http import HttpResponse, JsonResponse
 from search_engine.parsing_utils import string_to_tokens
 
@@ -22,18 +22,21 @@ def search_covid(request):
 def import_pubmed(request):
     import pandas as pd
     # read the 10000 files from csv
-    num_of_csv = 1000
+    num_of_csv = 35
     count = 0
     no10 = []
     for i in range(1,num_of_csv+1):
-        dataframe = pd.read_csv('pubmed/{}.csv'.format(i))
+        dataframe = pd.read_csv('Genetic_disease/{}.csv'.format(i))
         count += dataframe.shape[0]
         if dataframe.shape[0] != 10:
             no10.append(i)
         titles = list(dataframe['title'])
-        abstracts = list(dataframe['abstract'])
+        bg = list(dataframe['Background'])
+        method = list(dataframe['Methods'])
+        result = list(dataframe['Results'])
+        conclusion = list(dataframe['Conclusion'])
         for j in range(len(titles)):
-            a = Article(title = titles[j], abstract = abstracts[j])
+            a = Bmc(title = titles[j], background = bg[j], methods = method[j], results = result[j], conclusion = conclusion[j], subset = "genetic_disease")
             a.save()
 
     return HttpResponse('import success{}'.format(count))

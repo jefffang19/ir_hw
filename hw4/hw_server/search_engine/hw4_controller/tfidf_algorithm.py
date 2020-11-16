@@ -2,7 +2,7 @@ from ..models import Article
 
 def tfidf(query_word, method_tf, method_idf):
     # get the docs
-    a = Article.objects.all()[:100]
+    a = Article.objects.all()[:200]
 
     doc_weight = []
 
@@ -48,7 +48,7 @@ def idf(query_word, method):
 
 def ftd(query_word):
     a = Article.objects.all()
-    articles = [i for i in a[:100]]
+    articles = [i for i in a[:200]]
 
     # Freq(t,d)
     # a array frequncey of query term in each documents
@@ -74,7 +74,7 @@ def ftd(query_word):
 # return nt, N
 def nt(query_word):
     a = Article.objects.all()
-    articles = [i for i in a[:100]]
+    articles = [i for i in a[:200]]
 
     # query term exist in how many document
     _nt = 0

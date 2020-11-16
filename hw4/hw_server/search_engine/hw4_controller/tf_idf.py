@@ -18,8 +18,6 @@ def show_tfidef(request):
         # get the tfidf method user chose
         tfidf_method = [int(request.POST['ltf']), int(request.POST['lidf']), int(request.POST['rtf']), int(request.POST['ridf'])]
 
-        a = Article.objects.all()
-
         l_tfidf = tfidf(origin_keyword, tfidf_method[0], tfidf_method[1])
         l_tfidf.sort(key=lambda x: x[1], reverse=True)
         r_tfidf = tfidf(origin_keyword, tfidf_method[2], tfidf_method[3])

@@ -4,7 +4,7 @@ from django.db import models
 class Article(models.Model):
     title = models.CharField(max_length=200)
     abstract = models.CharField(max_length=200)
-    
+
 class Word(models.Model):
     context = models.CharField(max_length=200)
     position = models.ManyToManyField(Article)
@@ -25,3 +25,11 @@ class Tsne(models.Model):
     y_val = models.FloatField()
     label = models.CharField(max_length=200)
     perplexity = models.IntegerField()
+
+class Bmc(models.Model):
+    title = models.CharField(max_length=200)
+    subset = models.CharField(max_length=200)
+    background = models.CharField(max_length=200)
+    methods = models.CharField(max_length=200)
+    results = models.CharField(max_length=200)
+    conclusion = models.CharField(max_length=200)
