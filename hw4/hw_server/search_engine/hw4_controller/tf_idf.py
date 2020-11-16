@@ -17,9 +17,9 @@ def show_tfidef(request):
         # get the tfidf method user chose
         tfidf_method = [int(request.POST['ltf']), int(request.POST['lidf']), int(request.POST['rtf']), int(request.POST['ridf'])]
 
-        l_tfidf = tfidf(origin_keyword, tfidf_method[0], tfidf_method[1])
+        l_tfidf = tfidf(origin_keyword, tfidf_method[0], tfidf_method[1], int(request.POST['ldata']))
         l_tfidf.sort(key=lambda x: x[1], reverse=True)
-        r_tfidf = tfidf(origin_keyword, tfidf_method[2], tfidf_method[3])
+        r_tfidf = tfidf(origin_keyword, tfidf_method[2], tfidf_method[3], int(request.POST['rdata']))
         r_tfidf.sort(key=lambda x: x[1], reverse=True)
 
         # prepare data for template

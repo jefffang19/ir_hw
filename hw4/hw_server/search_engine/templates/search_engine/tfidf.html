@@ -71,24 +71,43 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
-                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
+                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">tf </button>
                         <div class="dropdown-menu"><a class="dropdown-item" id="l_tf_1">raw count</a><a class="dropdown-item" id="l_tf_2">term frequency</a><a class="dropdown-item" id="l_tf_3">log normalization</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
+                    <div class="dropdown"><button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">idf </button>
                         <div class="dropdown-menu"><a class="dropdown-item" id="l_idf_1">inverse document frequency</a><a class="dropdown-item" id="l_idf_2">unary</a><a class="dropdown-item" id="l_idf_3">inverse document frequency smooth</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
+                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">tf </button>
                         <div class="dropdown-menu"><a class="dropdown-item" id="r_tf_1">raw count</a><a class="dropdown-item" id="r_tf_2">term frequency</a><a class="dropdown-item" id="r_tf_3">log normalization</a></div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>
+                    <div class="dropdown"><button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">idf </button>
                         <div class="dropdown-menu"><a class="dropdown-item" id="r_idf_1">inverse document frequency</a><a class="dropdown-item" id="r_idf_2">unary</a><a class="dropdown-item" id="r_idf_3">inverse document frequency smooth</a></div>
                     </div>
+                </div>
+            </div>
+        </div>
+{#        choose dataset #}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="dropdown"><button class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dataset </button>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="l_dataset_1">colorectal cancer</a><a class="dropdown-item" id="l_dataset_2">genetic disease</a></div>
+                    </div>
+                </div>
+                <div class="col-md-3" id="ld">
+                </div>
+                <div class="col-md-3">
+                    <div class="dropdown"><button class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dataset </button>
+                        <div class="dropdown-menu"><a class="dropdown-item" id="r_dataset_1">colorectal cancer</a><a class="dropdown-item" id="r_dataset_2">genetic disease</a></div>
+                    </div>
+                </div>
+                <div class="col-md-3" id="rd">
                 </div>
             </div>
         </div>
@@ -131,6 +150,8 @@
         var l_idf = 0;
         var r_tf = 0;
         var r_idf = 0;
+        var l_dataset = 0;
+        var r_dataset = 0;
 
         {#window.onload = function () {#}
         {##}
@@ -188,6 +209,31 @@
             document.getElementById('image3').src = "{% static formula|get_element:5 %}";
             r_idf = 2;
         });
+        {# dataset #}
+        document.getElementById('l_dataset_1').addEventListener('click', function () {
+            var label = document.getElementById('ld');
+            label.innerHTML = "";
+            label.innerHTML += '<h5>colorectal cancer</h5>';
+            l_dataset = 0;
+        });
+        document.getElementById('l_dataset_2').addEventListener('click', function () {
+            var label = document.getElementById('ld');
+            label.innerHTML = "";
+            label.innerHTML += '<h5>genetic disease</h5>';
+            l_dataset = 1;
+        });
+        document.getElementById('r_dataset_1').addEventListener('click', function () {
+            var label = document.getElementById('rd');
+            label.innerHTML = "";
+            label.innerHTML += '<h5>colorectal cancer</h5>';
+            r_dataset = 0;
+        });
+        document.getElementById('r_dataset_2').addEventListener('click', function () {
+            var label = document.getElementById('rd');
+            label.innerHTML = "";
+            label.innerHTML += '<h5>genetic disease</h5>';
+            r_dataset = 1;
+        });
 
         function sendQuery(){
             // clear list
@@ -199,7 +245,7 @@
             $.ajax({
                 url: "/search_engine/tfidf",
                 type: 'POST',
-                data:{keyword:keyword, ltf: l_tf, lidf: l_idf, rtf: r_tf, ridf: r_idf},
+                data:{keyword:keyword, ltf: l_tf, lidf: l_idf, rtf: r_tf, ridf: r_idf, ldata: l_dataset, rdata: r_dataset},
                 success: function (data) {
                     var l_list = document.getElementById("l_title_list");
                     var r_list = document.getElementById("r_title_list");
@@ -216,7 +262,7 @@
                     for (i=0;i<data['r_titles'].length;i++){
                         r_list.innerHTML += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
                             '                                <div class="d-flex w-100 justify-content-between">\n' +
-                            '                                  <small>tfidf:' + data['r_weights'][i] + '</small>\n' +
+                            '                                  <small>query term weight:' + data['r_weights'][i] + '</small>\n' +
                             '                                </div>\n' +
                             '                                <p class="mb-1">' + data['r_titles'][i] + '</p>\n' +
                             '                              </a>';

@@ -1,8 +1,15 @@
 from ..models import Bmc
 
-def tfidf(query_word, method_tf, method_idf):
+def tfidf(query_word, method_tf, method_idf, subset):
     # get the docs
-    bmc = Bmc.objects.filter(subset = 'colorectal_cancer')
+    bmc = ''
+    if subset == 0:
+        bmc = Bmc.objects.filter(subset = 'colorectal_cancer')
+    elif subset == 1:
+        bmc = Bmc.objects.filter(subset = 'genetic_disease')
+    else:
+        assert "Wrong Subset Error"
+
     bmc = list(bmc)
 
     doc_weight = []
@@ -36,6 +43,8 @@ def idf(query_word, method, bmc):
         if _nt == 0:
             return 0
         else:
+            if math.log(_N/_nt) < 0:
+                print("{} {}".format(_N, _nt))
             return math.log(_N/_nt)
     # unary
     elif method == 1:
@@ -82,10 +91,16 @@ def nt(query_word, bmc):
     N = len(articles)
 
     for doc in articles:
+        t_exist = False
         for paragraph in [doc.background, doc.methods, doc.results, doc.conclusion]:
             for word in paragraph.split(' '):
                 if word == query_word:
-                    _nt += 1
-                    break
+                    if not t_exist:
+                        _nt += 1
+                        t_exist = True
+                        break
+
+            if t_exist:
+                break
 
     return _nt, N
