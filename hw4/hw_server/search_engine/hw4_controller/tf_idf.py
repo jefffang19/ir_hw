@@ -1,6 +1,5 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from ..models import Article
 from ..forms import WordForm
 
 from .tfidf_algorithm import tfidf

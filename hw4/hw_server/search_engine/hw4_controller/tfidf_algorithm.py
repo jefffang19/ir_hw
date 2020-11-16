@@ -1,19 +1,20 @@
-from ..models import Article
+from ..models import Bmc
 
 def tfidf(query_word, method_tf, method_idf):
     # get the docs
-    a = Article.objects.all()[:200]
+    bmc = Bmc.objects.filter(subset = 'colorectal_cancer')
+    bmc = list(bmc)
 
     doc_weight = []
 
-    for i in range(len(a)):
-        doc_weight.append( [a[i].title, tf(query_word, i, method_tf)*idf(query_word, method_idf)] )
+    for i in range(len(bmc)):
+        doc_weight.append( [bmc[i].title, tf(query_word, i, method_tf, bmc)*idf(query_word, method_idf, bmc)] )
 
 
     return doc_weight
 
-def tf(query_word, doc_n, method):
-    _ftd = ftd(query_word)
+def tf(query_word, doc_n, method, bmc):
+    _ftd = ftd(query_word, bmc)
     # raw count
     if method == 0:
         return _ftd[doc_n]['ftd']
@@ -26,9 +27,9 @@ def tf(query_word, doc_n, method):
         return math.log(1 + _ftd[doc_n]['ftd'])
 
 
-def idf(query_word, method):
+def idf(query_word, method, bmc):
     import math
-    _nt, _N = nt(query_word)
+    _nt, _N = nt(query_word, bmc)
     # inverse document frequency
     if method == 0:
         # fix division by zero
@@ -46,9 +47,8 @@ def idf(query_word, method):
 
 # definition of ftd and nt, please look at td-idf English Wiki page
 
-def ftd(query_word):
-    a = Article.objects.all()
-    articles = [i for i in a[:200]]
+def ftd(query_word, bmc):
+    articles = [i for i in bmc]
 
     # Freq(t,d)
     # a array frequncey of query term in each documents
@@ -59,10 +59,11 @@ def ftd(query_word):
         temp_ftd = {}
         query_word_cnt = 0
         all_words_cnt = 0
-        for word in doc.abstract.split(' '):
-            all_words_cnt += 1
-            if word == query_word:
-                query_word_cnt += 1
+        for paragraph in [doc.background, doc.methods, doc.results, doc.conclusion]:
+            for word in paragraph.split(' '):
+                all_words_cnt += 1
+                if word == query_word:
+                    query_word_cnt += 1
 
         temp_ftd['title'] = doc.title
         temp_ftd['ftd'] = query_word_cnt
@@ -72,9 +73,8 @@ def ftd(query_word):
     return f_td
 
 # return nt, N
-def nt(query_word):
-    a = Article.objects.all()
-    articles = [i for i in a[:200]]
+def nt(query_word, bmc):
+    articles = [i for i in bmc]
 
     # query term exist in how many document
     _nt = 0
@@ -82,9 +82,10 @@ def nt(query_word):
     N = len(articles)
 
     for doc in articles:
-        for word in doc.abstract.split(' '):
-            if word == query_word:
-                _nt += 1
-                break
+        for paragraph in [doc.background, doc.methods, doc.results, doc.conclusion]:
+            for word in paragraph.split(' '):
+                if word == query_word:
+                    _nt += 1
+                    break
 
     return _nt, N
