@@ -67,16 +67,28 @@
             <div class="row">
                 <div class="col-md-6">
                     <ul class="list-group">
-                        <li class="list-group-item"><span>List Group Item 1</span></li>
-                        <li class="list-group-item"><span>List Group Item 2</span></li>
-                        <li class="list-group-item"><span>List Group Item 3</span></li>
+                        {% for i in l_titles %}
+                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                                <div class="d-flex w-100 justify-content-between">
+{#                                  <h5 class="mb-1">{{ i }}</h5>#}
+                                  <small>tfidf: {{ l_weights|get_element:forloop.counter0 }}</small>
+                                </div>
+                                <p class="mb-1">{{ i }}</p>
+                              </a>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="col-md-6">
                     <ul class="list-group">
-                        <li class="list-group-item"><span>List Group Item 1</span></li>
-                        <li class="list-group-item"><span>List Group Item 2</span></li>
-                        <li class="list-group-item"><span>List Group Item 3</span></li>
+                        {% for i in r_titles %}
+                            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                                <div class="d-flex w-100 justify-content-between">
+{#                                  <h5 class="mb-1">{{ i }}</h5>#}
+                                  <small>tfidf: {{ r_weights|get_element:forloop.counter0 }}</small>
+                                </div>
+                                <p class="mb-1">{{ i }}</p>
+                              </a>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
