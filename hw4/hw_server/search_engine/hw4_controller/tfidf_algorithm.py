@@ -31,7 +31,11 @@ def idf(query_word, method):
     _nt, _N = nt(query_word)
     # inverse document frequency
     if method == 0:
-        return math.log(_N/_nt)
+        # fix division by zero
+        if _nt == 0:
+            return 0
+        else:
+            return math.log(_N/_nt)
     # unary
     elif method == 1:
         return 1
