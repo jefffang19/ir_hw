@@ -36,15 +36,19 @@ def tfidf_vec(queryword, method_tf, method_idf, subset):
     d_lens = [len(queryword.split(' '))]
     titles = [queryword]
     corpus = [queryword]
-    # corpus_bg = [queryword]
-    # corpus_mt = [queryword]
-    # corpus_rt = [queryword]
-    # corpus_con = [queryword]
+    corpus_bg = [queryword]
+    corpus_mt = [queryword]
+    corpus_rt = [queryword]
+    corpus_con = [queryword]
     for i in bmc:
         s = '{} {} {} {}'.format(i.background, i.methods, i.results, i.conclusion)
         titles.append(i.title)
         d_lens.append(len(s.split(' ')))
         corpus.append(s)
+        corpus_bg.append(i.background)
+        corpus_mt.append(i.methods)
+        corpus_rt.append(i.results)
+        corpus_con.append(i.conclusion)
 
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
@@ -64,14 +68,46 @@ def tfidf_vec(queryword, method_tf, method_idf, subset):
     tfidf_vec = TfidfVectorizer(use_idf=use_idf, smooth_idf=smooth_idf, sublinear_tf=sublinear)
     tfidf_matrix = tfidf_vec.fit_transform(corpus)
 
+    tfidf_bg_matrix = tfidf_vec.fit_transform(corpus_bg)
+    tfidf_mt_matrix = tfidf_vec.fit_transform(corpus_mt)
+    tfidf_rt_matrix = tfidf_vec.fit_transform(corpus_rt)
+    tfidf_con_matrix = tfidf_vec.fit_transform(corpus_con)
+
     # return [cosine_similarity(tfidf_matrix.toarray()[0].reshape(1, -1), tfidf_matrix.toarray()[1].reshape(1, -1))]
-    return tfidf_matrix.toarray(), titles, d_lens
+    return tfidf_matrix.toarray(), titles, d_lens, tfidf_bg_matrix.toarray(), tfidf_mt_matrix.toarray(), tfidf_rt_matrix.toarray(), tfidf_con_matrix.toarray()
 
 def cos_sim(matrix):
     from sklearn.metrics.pairwise import cosine_similarity
     c = []
     for i in range(len(matrix)):
         c.append(cosine_similarity(matrix[0].reshape(1, -1), matrix[i].reshape(1, -1))[0, 0] )
+
+    return c
+
+def cos_sim_para(q, tfidf_bg_matrix, tfidf_mt_matrix, tfidf_rt_matrix, tfidf_con_matrix):
+    from sklearn.metrics.pairwise import cosine_similarity
+    c = [0]
+    max = -999
+    for i in range(1, len(tfidf_bg_matrix)):
+        pos = 0
+        val = cosine_similarity(tfidf_bg_matrix[0].reshape(1, -1), tfidf_bg_matrix[i].reshape(1, -1))[0, 0]
+        if val > max:
+            max = val
+            pos = 0
+        val = cosine_similarity(tfidf_mt_matrix[0].reshape(1, -1), tfidf_mt_matrix[i].reshape(1, -1))[0, 0]
+        if val > max:
+            max = val
+            pos = 1
+        val = cosine_similarity(tfidf_rt_matrix[0].reshape(1, -1), tfidf_rt_matrix[i].reshape(1, -1))[0, 0]
+        if val > max:
+            max = val
+            pos = 2
+        val = cosine_similarity(tfidf_con_matrix[0].reshape(1, -1), tfidf_con_matrix[i].reshape(1, -1))[0, 0]
+        if val > max:
+            max = val
+            pos = 3
+
+        c.append(pos)
 
     return c
 
