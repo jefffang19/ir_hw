@@ -37,4 +37,5 @@ urlpatterns = [
     path('bsbi', views.bsbi, name = 'bsbi'),
     path('spimi', views.spimi, name = 'spimi'),
     path('time_cost', views.bsbi_spimi_time, name = 'time_cost'),
+    path('hw5_search', views.search, name = 'hw5_search'),
 ]
