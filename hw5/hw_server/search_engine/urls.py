@@ -40,4 +40,5 @@ urlpatterns = [
     path('hw5_search', views.search, name = 'hw5_search'),
     path('create_spell_check', views.create_spell_check, name = 'create_spell_check'),
     path('spell_check', views.spell_check, name = 'spell_check'),
+    path('hw5_sheet', views.demo_sheet, name = 'hw5_sheet'),
 ]

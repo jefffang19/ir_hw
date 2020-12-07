@@ -106,3 +106,10 @@ def search(request):
 
     else:
         return HttpResponse('unsupported method')
+
+def demo_sheet(request):
+    return JsonResponse({
+        'normal': 'COVID-19',
+        'synonym': 'Wuhan coronavirus',
+        'misspell': 'COVID-18 vaccine',
+    })
