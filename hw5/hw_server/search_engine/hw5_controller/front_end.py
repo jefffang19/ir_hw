@@ -3,6 +3,8 @@ from django.shortcuts import render
 from ..forms import WordForm
 from ..models import Article, Bsbi, Spimi, PositionInDoc
 
+from .utils import parse_mesh_func
+
 import numpy as np  # array handling
 
 from django.views.decorators.csrf import csrf_exempt
@@ -17,6 +19,17 @@ def search(request):
         # get the bsbi/spimi
         index_method = int(request.POST['bsbi_spimi'])
         sort_by_tf = int(request.POST['tf'])
+
+        # get mesh dictionary
+        mesh_dict, _ = parse_mesh_func()
+        mesh_dict_str = ''
+        first = True
+        for i in mesh_dict[origin_keyword]:
+            if first:
+                first = False
+            else:
+                mesh_dict_str = mesh_dict_str + 'OR '
+            mesh_dict_str = mesh_dict_str + '\"' + i + '\"\n'
 
         docs_set = []
         # bsbi
@@ -76,7 +89,7 @@ def search(request):
 
         abstracts = [i['abstract'] for i in search_result.values()]
 
-        template_dict = {'weights': weights, 'titles':list(search_result.keys()), 'abstract': abstracts}
+        template_dict = {'weights': weights, 'titles':list(search_result.keys()), 'abstract': abstracts, 'mesh_dict': mesh_dict_str}
 
         return JsonResponse(template_dict, safe=False)
 

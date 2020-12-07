@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>IIrHW4</title>
+    <title>IIrHW5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href={% static "css/Highlight-Blue.css" %}>
     <link rel="stylesheet" href={% static "css/hw4_styles.css" %}>
@@ -94,9 +94,7 @@
 {#        mesh#}
         <div class="container">
             <div class="row">
-                <div class="col-md-3">
-                    <p id="mesh block">mesh term:</p>
-                </div>
+                <p id="mesh block">mesh:</p>
             </div>
         </div>
 
@@ -196,6 +194,10 @@
                 success: function (data) {
                     var l_list = document.getElementById("l_title_list");
 
+                    // get mesh dictionary
+                    var mesh_dict = document.getElementById("mesh block");
+                    mesh_dict.innerHTML = "mesh synonym:";
+
                     for (i=0;i<10;i++){
                         l_list.innerHTML += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">\n' +
                             '                                <div class="d-flex w-100 justify-content-between">\n' +
@@ -205,6 +207,8 @@
                             '                               <small>'+ data['abstract'][i] + '</small>' +
                             '                              </a>';
                     }
+
+                    mesh_dict.innerHTML += '\n<strong>' + data['mesh_dict'] + '</strong>\n';
                 },
                 error: function () {
                     alert("query failed")
