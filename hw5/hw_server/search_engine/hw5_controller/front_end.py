@@ -3,7 +3,7 @@ from django.shortcuts import render
 from ..forms import WordForm
 from ..models import Article, Bsbi, Spimi, PositionInDoc
 
-from .utils import parse_mesh_func
+from .utils import parse_mesh_func, mesh_spell_check
 
 import numpy as np  # array handling
 
@@ -16,6 +16,14 @@ def search(request):
         # get search word
         # we do NOT stem in this hw
         origin_keyword = request.POST['keyword']
+
+        # print('debug {}'.format(origin_keyword))
+
+        # do mesh spell check
+        _, origin_keyword = mesh_spell_check(origin_keyword)
+
+        # print('debug after {}'.format(origin_keyword))
+
         # get the bsbi/spimi
         index_method = int(request.POST['bsbi_spimi'])
         sort_by_tf = int(request.POST['tf'])
