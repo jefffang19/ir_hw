@@ -60,7 +60,7 @@ def search(request):
         return JsonResponse(template_dict, safe=False)
 
     elif request.method == 'GET':
-        # return render(request, "search_engine/tfidf.html", template_dict)
+        return render(request, "search_engine/hw5.html")
 
         query_word = 'COVID-19'
 
