@@ -9,6 +9,16 @@ def find_all(a_str, sub):
 def parse_mesh_func():
     mesh = open('../c2020.bin')
 
+    # read covid-19 related NM
+    f = open('../mesh_nm')
+    _covid_term = f.readlines()
+    # remove newline
+    covid_term = []
+    for i in range(len(_covid_term) - 1):
+        covid_term.append(_covid_term[i][:-1])
+
+    covid_term.append(_covid_term[len(_covid_term) - 1])
+
     # deal with the first line
     line = mesh.readline()
 
@@ -25,7 +35,7 @@ def parse_mesh_func():
             _index = ''
         elif line[:2] == 'NM' and line[:5] != 'NM_TH':
             # print(line, end='')
-            _index = line[5:-1].split(',')[0]
+            _index = line[5:-1]
             #         print(_index)
 
             # create a synonyms index
@@ -42,9 +52,10 @@ def parse_mesh_func():
     # return index, inverted_index
 
     # filter out words without covid19
+    # filter out words without covid19
     filt_index = {}
     for i in index.keys():
-        if ('COVID' in i) or ('covid' in i):
+        if i in covid_term:
             filt_index[i] = index[i]
 
     filt_inv_index = {}
