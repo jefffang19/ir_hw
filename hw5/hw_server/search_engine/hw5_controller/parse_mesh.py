@@ -3,7 +3,7 @@ from django.shortcuts import render
 from ..forms import WordForm
 from ..models import Article, BsbiBlocks, PositionInDoc, Bsbi, Spimi
 
-from .utils import find_all, parse_mesh_func
+from .utils import find_all, parse_mesh_func, create_mesh_spell_check_dict, mesh_spell_check
 
 import numpy as np  # array handling
 
@@ -213,3 +213,18 @@ def spimi(request):
     end_time = time.time()
 
     return JsonResponse({**{'time cost of spimi(sec):': end_time - start_time}, **spimi_dict})
+
+def create_spell_check(request):
+    # reference
+    # https://pyspellchecker.readthedocs.io/en/latest/quickstart.html
+
+    # write to json file to use in spell checker
+    import json
+
+    freq_dict = create_mesh_spell_check_dict()
+
+    with open('spellcheck_dict.json', 'w') as f:
+        json.dump(freq_dict, f)
+
+
+    return JsonResponse(freq_dict)

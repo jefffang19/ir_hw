@@ -65,3 +65,23 @@ def parse_mesh_func():
             filt_inv_index[j] = i
 
     return filt_index, filt_inv_index
+
+# return dictionary of each term and corresponding freq
+def create_mesh_spell_check_dict():
+    from ..models import Bsbi, Spimi, PositionInDoc
+
+    raw = PositionInDoc.objects.all()
+
+    mesh_freq = {}
+
+    for i in raw:
+        if i.origin_term not in mesh_freq.keys():
+            mesh_freq[i.origin_term] = 1
+        else:
+            mesh_freq[i.origin_term] += 1
+
+    return mesh_freq
+
+# spell checking function using mesh dictionary
+def mesh_spell_check(term):
+    pass

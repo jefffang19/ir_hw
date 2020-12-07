@@ -38,4 +38,5 @@ urlpatterns = [
     path('spimi', views.spimi, name = 'spimi'),
     path('time_cost', views.bsbi_spimi_time, name = 'time_cost'),
     path('hw5_search', views.search, name = 'hw5_search'),
+    path('create_spell_check', views.create_spell_check, name = 'create_spell_check'),
 ]
