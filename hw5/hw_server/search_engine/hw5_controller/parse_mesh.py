@@ -1,7 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from ..forms import WordForm
-from ..models import Article, BsbiBlocks, PositionInDoc, Bsbi
+from ..models import Article, BsbiBlocks, PositionInDoc, Bsbi, Spimi
 
 from .utils import find_all, parse_mesh_func
 
@@ -74,9 +74,9 @@ def bsbi(request):
 
     # find mesh term
     for cnt, art in enumerate(articles_set):
-        # print(cnt)
+        print(cnt)
         for mesh_term in mesh_inv.keys():
-            # print(art)
+            # print(art.pk)
             pos = list(find_all(art.abstract, mesh_term))
 
             if mesh_inv[mesh_term] not in bsbi_dict:
@@ -109,8 +109,11 @@ def bsbi(request):
                     # add to db
                     b.pos_in_a_article.add(posins_db[_cnt])
 
-    # sort the dict by value
+    # sort the dict by key
     bsbi_dict = {k: v for k, v in sorted(bsbi_dict.items(), key=lambda item: item[0], reverse=True)}
+    # sort the value list
+    for term in bsbi_dict.keys():
+        bsbi_dict[term] = [t for t in sorted(bsbi_dict[term], key=lambda item: item['origin_term'], reverse=True)]
 
     for term in bsbi_dict.keys():
         print(term)
@@ -131,10 +134,70 @@ def bsbi(request):
 
 
     # return JsonResponse(bsbi_dict)
-    return JsonResponse({'time cost of bsbi(sec):' : end_time - start_time})
+    return JsonResponse({**{'time cost of bsbi(sec):' : end_time - start_time}, **bsbi_dict})
 
     # return HttpResponse([sorted(list(bsbi_dict.keys()))])
     # return HttpResponse([list(bsbi_dict.keys())])
 
 def bsbi_spimi_time(request):
-    return JsonResponse({"time cost of bsbi(sec):": 133.5524184703827})
+    return JsonResponse({"time cost of bsbi(sec):": 148.03729367256165,
+                         "time cost of spimi(sec):": 51.07648849487305})
+
+
+def spimi(request):
+    articles_set = Article.objects.all()
+    # get mesh dictionary (covid-19 related)
+    mesh, mesh_inv = parse_mesh_func()
+
+    spimi_dict = {}
+
+    # count time
+    import time
+
+    start_time = time.time()
+
+    # find mesh term
+    for cnt, art in enumerate(articles_set):
+        print(cnt)
+        for mesh_term in mesh_inv.keys():
+            # print(art.pk)
+            pos = list(find_all(art.abstract, mesh_term))
+
+            if mesh_inv[mesh_term] not in spimi_dict:
+                spimi_dict[mesh_inv[mesh_term]] = []
+
+            # mesh term exist
+            if len(pos) != 0:
+                posins = []
+                for p in pos:
+                    # make dictionary
+                    pos_dict = {}
+                    pos_dict['article_id'] = art.pk
+                    pos_dict['position'] = p
+                    pos_dict['origin_term'] = mesh_term
+                    posins.append(pos_dict)
+
+                for _cnt, j in enumerate(posins):
+                    # add to dictionary
+                    spimi_dict[mesh_inv[mesh_term]].append(j)
+
+    # don't sort with spimi
+
+    for term in spimi_dict.keys():
+        print(term)
+        _term_list = spimi_dict[term]
+        _posins = []
+        for i in _term_list:
+            posin = PositionInDoc(article_id=i['article_id'], position=i['position'], origin_term=i['origin_term'])
+            posin.save()
+            _posins.append(posin)
+
+        # save merge block to db
+        b = Spimi(term=term)
+        b.save()
+        for i in _posins:
+            b.pos_in_a_artcle.add(i)
+
+    end_time = time.time()
+
+    return JsonResponse({**{'time cost of spimi(sec):': end_time - start_time}, **spimi_dict})

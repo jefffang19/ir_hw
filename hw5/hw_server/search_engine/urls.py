@@ -35,5 +35,6 @@ urlpatterns = [
     # hw5
     path('parse_mesh', views.parse_mesh, name = 'parse_mesh'),
     path('bsbi', views.bsbi, name = 'bsbi'),
+    path('spimi', views.spimi, name = 'spimi'),
     path('time_cost', views.bsbi_spimi_time, name = 'time_cost'),
 ]

@@ -47,3 +47,7 @@ class BsbiBlocks(models.Model):
 class Bsbi(models.Model):
     term = models.CharField(max_length=200)
     pos_in_a_artcle = models.ManyToManyField(PositionInDoc)
+
+class Spimi(models.Model):
+    term = models.CharField(max_length=200)
+    pos_in_a_artcle = models.ManyToManyField(PositionInDoc)
