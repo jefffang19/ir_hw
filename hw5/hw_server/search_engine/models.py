@@ -33,3 +33,17 @@ class Bmc(models.Model):
     methods = models.CharField(max_length=200)
     results = models.CharField(max_length=200)
     conclusion = models.CharField(max_length=200)
+
+class PositionInDoc(models.Model):
+    article_id = models.IntegerField()
+    position = models.IntegerField()
+    origin_term = models.CharField(max_length=200)
+
+class BsbiBlocks(models.Model):
+    term = models.CharField(max_length=200)
+    position = models.ManyToManyField(Article)
+    pos_in_a_article = models.ManyToManyField(PositionInDoc)
+
+class Bsbi(models.Model):
+    term = models.CharField(max_length=200)
+    pos_in_a_artcle = models.ManyToManyField(PositionInDoc)

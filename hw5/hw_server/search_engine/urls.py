@@ -32,4 +32,8 @@ urlpatterns = [
     # hw4
     path('tfidf', views.show_tfidef, name = 'tfidf'),
     path('create_tfidf_vec', views.create_tfidf_vec, name = 'create_tfidf_vec'),
+    # hw5
+    path('parse_mesh', views.parse_mesh, name = 'parse_mesh'),
+    path('bsbi', views.bsbi, name = 'bsbi'),
+    path('time_cost', views.bsbi_spimi_time, name = 'time_cost'),
 ]
