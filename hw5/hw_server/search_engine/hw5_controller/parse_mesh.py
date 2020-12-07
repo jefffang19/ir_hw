@@ -44,7 +44,7 @@ def parse_mesh(request):
             #         print(_index)
 
             # create a synonyms index
-            index[_index] = []
+            index[_index] = [_index]
 
         elif line[:2] == 'SY':
             # print(line, end='')
@@ -152,8 +152,8 @@ def bsbi(request):
     # return HttpResponse([list(bsbi_dict.keys())])
 
 def bsbi_spimi_time(request):
-    return JsonResponse({"time cost of bsbi(sec):": 728.8610818386078,
-                         "time cost of spimi(sec):": 337.49156379699707})
+    return JsonResponse({"time cost of bsbi(sec):": 1307.847761631012,
+                         "time cost of spimi(sec):": 560.0186586380005})
 
 
 def spimi(request):

@@ -39,7 +39,8 @@ def parse_mesh_func():
             #         print(_index)
 
             # create a synonyms index
-            index[_index] = []
+            # add oneself to its synonyms
+            index[_index] = [_index]
 
         elif line[:2] == 'SY':
             # print(line, end='')
