@@ -17,19 +17,19 @@ def search(request):
         # we do NOT stem in this hw
         origin_keyword = request.POST['keyword']
 
-        # print('debug {}'.format(origin_keyword))
-
         # do mesh spell check
         _, origin_keyword = mesh_spell_check(origin_keyword)
-
-        # print('debug after {}'.format(origin_keyword))
 
         # get the bsbi/spimi
         index_method = int(request.POST['bsbi_spimi'])
         sort_by_tf = int(request.POST['tf'])
 
         # get mesh dictionary
-        mesh_dict, _ = parse_mesh_func()
+        mesh_dict, inv_mesh_dict = parse_mesh_func()
+
+        # if term not parent mesh term, map to parent
+        origin_keyword = inv_mesh_dict[origin_keyword]
+
         mesh_dict_str = ''
         first = True
         for i in mesh_dict[origin_keyword]:
