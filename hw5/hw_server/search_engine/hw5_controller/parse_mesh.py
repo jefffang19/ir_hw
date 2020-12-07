@@ -152,8 +152,8 @@ def bsbi(request):
     # return HttpResponse([list(bsbi_dict.keys())])
 
 def bsbi_spimi_time(request):
-    return JsonResponse({"time cost of bsbi(sec):": 148.03729367256165,
-                         "time cost of spimi(sec):": 229.59812331199646})
+    return JsonResponse({"time cost of bsbi(sec):": 728.8610818386078,
+                         "time cost of spimi(sec):": 337.49156379699707})
 
 
 def spimi(request):
