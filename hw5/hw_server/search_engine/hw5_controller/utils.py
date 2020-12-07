@@ -83,5 +83,21 @@ def create_mesh_spell_check_dict():
     return mesh_freq
 
 # spell checking function using mesh dictionary
+# return correct form
 def mesh_spell_check(term):
-    pass
+    mis_spell = False
+
+    from spellchecker import SpellChecker
+
+    # turn off loading a built language dictionary, case sensitive on
+    spell = SpellChecker(language=None, case_sensitive=True)
+
+    # load dictionary
+    spell.word_frequency.load_dictionary('spellcheck_dict.json')
+
+    # check if not misspell
+    if term in spell:
+        return mis_spell, term
+
+    # if misspell
+    return True, spell.correction(term)

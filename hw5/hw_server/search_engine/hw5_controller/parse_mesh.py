@@ -228,3 +228,20 @@ def create_spell_check(request):
 
 
     return JsonResponse(freq_dict)
+
+# test spell check
+@csrf_exempt
+def spell_check(request):
+    if request.method == 'GET':
+        is_misspell, correct_word = mesh_spell_check('COviD-19')
+
+        return JsonResponse({'is misspelled': is_misspell, 'correct word': correct_word, 'origin word': 'COviD-19'})
+    elif request.method == 'POST':
+        origin_keyword = request.POST['keyword']
+
+        is_misspell, correct_word = mesh_spell_check(origin_keyword)
+
+        return JsonResponse({'is misspelled': is_misspell, 'correct word': correct_word, 'origin word': origin_keyword})
+
+    else:
+        return HttpResponse('wrong method')
