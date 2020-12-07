@@ -37,10 +37,24 @@ def search(request):
                 search_result[appeared_article.title]['marker'] = []
                 search_result[appeared_article.title]['tf'] = 0
 
-            # save where to draw the marker to abstract
-            # [position, <marker> lenght]
-            search_result[appeared_article.title]['marker'].append([i.position, len(i.origin_term)])
-            search_result[appeared_article.title]['tf'] += 1
+            # check if terms overlap each other
+            add_new_marker = True
+
+            for past_marker in search_result[appeared_article.title]['marker']:
+                if past_marker[0] == i.position:
+                    # print('debug: overlap occurs')
+                    # keep the longer term
+                    if past_marker[1] < len(i.origin_term):
+                        past_marker[1] = len(i.origin_term)
+
+                    add_new_marker = False
+
+            if add_new_marker:
+                # save where to draw the marker to abstract
+                # [position, <marker> lenght]
+                search_result[appeared_article.title]['marker'].append([i.position, len(i.origin_term)])
+                search_result[appeared_article.title]['tf'] += 1
+
 
         for i in search_result.keys():
             # we draw the marker to abstract in reverse order, so the position won't be screwed up
