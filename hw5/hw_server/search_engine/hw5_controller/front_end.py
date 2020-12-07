@@ -16,30 +16,47 @@ def search(request):
         origin_keyword = request.POST['keyword']
         # get the bsbi/spimi
         index_method = int(request.POST['bsbi_spimi'])
+        sort_by_tf = int(request.POST['TF'])
 
-        l_tfidf = tfidf(origin_keyword, tfidf_method[0], tfidf_method[1], int(request.POST['ldata']))
-        l_tfidf.sort(key=lambda x: x[1], reverse=True)
-        r_tfidf = tfidf(origin_keyword, tfidf_method[2], tfidf_method[3], int(request.POST['rdata']))
-        r_tfidf.sort(key=lambda x: x[1], reverse=True)
+        docs_set = []
+        # bsbi
+        if index_method == 0:
+            docs_set = PositionInDoc.objects.filter(bsbi__term=origin_keyword)
+        # spimi
+        elif index_method == 1:
+            docs_set = PositionInDoc.objects.filter(spimi__term=origin_keyword)
 
-        # prepare data for template
-        docs_ranking_l = [i[0] for i in l_tfidf]
-        docs_weight_l = [i[1] for i in l_tfidf]
-        docs_len_l = [i[2] for i in l_tfidf]
-        docs_ranking_r = [i[0] for i in r_tfidf]
-        docs_weight_r = [i[1] for i in r_tfidf]
-        docs_len_r = [i[2] for i in r_tfidf]
+        # highlight searched word
+        search_result = {}
+        for i in docs_set:
+            appeared_article = Article.objects.get(pk=i.article_id)
+            # init a new abstract
+            if appeared_article.title not in search_result.keys():
+                search_result[appeared_article.title] = {}
+                search_result[appeared_article.title]['abstract'] = appeared_article.abstract
+                search_result[appeared_article.title]['marker'] = []
+                search_result[appeared_article.title]['tf'] = 0
 
-        # display formula images
-        available_formula = ['images/tf_raw_count.png', 'images/tf_term_frequency.png',
-                             'images/tf_log_normalization.png',
-                             'images/idf_inverse_document_frequency.png', 'images/idf_unary.png',
-                             'images/idf_inverse_document_frequency_smooth.png']
+            # save where to draw the marker to abstract
+            # [position, <marker> lenght]
+            search_result[appeared_article.title]['marker'].append([i.position, len(i.origin_term)])
+            search_result[appeared_article.title]['tf'] += 1
 
-        template_dict = {'l_titles': docs_ranking_l, 'l_weights': docs_weight_l, 'l_len': docs_len_l,
-                         'r_titles': docs_ranking_r, 'r_weights': docs_weight_r, 'r_len': docs_len_r,
-                         'formula': available_formula, 'lpara': [' ' for i in range(len(docs_ranking_l))], 'rpara': [' ' for i in range(len(docs_ranking_r))]}
-        # return render(request, "search_engine/tfidf.html", template_dict)
+        for i in search_result.keys():
+            # we draw the marker to abstract in reverse order, so the position won't be screwed up
+            search_result[i]['marker'] = sorted(search_result[i]['marker'], key=lambda item: item[0], reverse=True)
+
+            for pos, length in search_result[i]['marker']:
+                _abstract = search_result[i]['abstract']
+                search_result[i]['abstract'] = _abstract[:pos] + '<mark>' + _abstract[pos:pos + length] + '</mark>' + _abstract[pos + length:]
+
+        # sort by tf
+        # sort the dict
+        if sort_by_tf == 1:
+            search_result = {k: v for k, v in sorted(search_result.items(), key=lambda item: item[1]['tf'], reverse=True)}
+
+        return HttpResponse([search_result])
+
         return JsonResponse(template_dict, safe=False)
 
     elif request.method == 'GET':
@@ -65,7 +82,7 @@ def search(request):
 
         for i in search_result.keys():
             # we draw the marker to abstract in reverse order, so the position won't be screwed up
-            sorted(search_result[i]['marker'], key=lambda item: item[0], reverse=True)
+            search_result[i]['marker'] = sorted(search_result[i]['marker'], key=lambda item: item[0], reverse=True)
 
             for pos, length in search_result[i]['marker']:
                 _abstract = search_result[i]['abstract']
