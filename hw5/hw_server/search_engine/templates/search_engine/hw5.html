@@ -34,7 +34,7 @@
         </div>
     </div>
     <div>
-{#        show formula images #}
+{#        choose method and tf #}
         <div class="container">
             <div class="row">
                 <div class="col-md-3">
@@ -50,7 +50,7 @@
                     <span class="badge badge-pill badge-success">method</span>
                 </div>
             </div>
-
+{# showed word #}
             <div class="row">
                 <div class="col-md-3">
                     <p id="l_tf_word">not sorted by tf</p>
@@ -88,6 +88,14 @@
                     <div class="dropdown"><button class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">method </button>
                         <div class="dropdown-menu"><a class="dropdown-item" id="r_method_1">BSBI</a><a class="dropdown-item" id="r_method_2">SPIMI</a></div>
                     </div>
+                </div>
+            </div>
+        </div>
+{#        mesh#}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <p id="mesh block">mesh term:</p>
                 </div>
             </div>
         </div>
@@ -186,7 +194,7 @@
             $.ajax({
                 url: controller_url,
                 type: 'POST',
-                data:{keyword:keyword, ltf: l_tf, lidf: l_idf, rtf: r_tf, ridf: r_idf, ldata: l_dataset, rdata: r_dataset},
+                data:{keyword:keyword, l_bsbi_spimi: l_method, l_tf: l_tf, r_bsbi_spimi: r_method, r_tf: r_tf},
                 success: function (data) {
                     var l_list = document.getElementById("l_title_list");
                     var r_list = document.getElementById("r_title_list");

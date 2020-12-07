@@ -15,8 +15,10 @@ def search(request):
         # we do NOT stem in this hw
         origin_keyword = request.POST['keyword']
         # get the bsbi/spimi
-        index_method = int(request.POST['bsbi_spimi'])
-        sort_by_tf = int(request.POST['TF'])
+        l_index_method = int(request.POST['l_bsbi_spimi'])
+        l_sort_by_tf = int(request.POST['l_tf'])
+        r_index_method = int(request.POST['r_bsbi_spimi'])
+        r_sort_by_tf = int(request.POST['r_tf'])
 
         docs_set = []
         # bsbi
